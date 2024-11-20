@@ -1,0 +1,7 @@
+{
+  "name": "AINarrativePainting.React",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
