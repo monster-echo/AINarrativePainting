@@ -29,7 +29,7 @@ try {
   console.log("Files in source:", fs.readdirSync(sourceDir))
 
   // Copy files
-  fs.emptyDirSync(targetDir)
+  // fs.emptyDirSync(targetDir)
   fs.copySync(sourceDir, targetDir)
 
   // Verify copy

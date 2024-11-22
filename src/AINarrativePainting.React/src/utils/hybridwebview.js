@@ -4,6 +4,7 @@ window.HybridWebView = {
       const event = new CustomEvent("HybridWebViewMessageReceived", {
         detail: { message: message },
       })
+      console.log("HybridWebViewMessageReceived", message)
       window.dispatchEvent(event)
     }
 

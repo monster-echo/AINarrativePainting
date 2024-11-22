@@ -1,6 +1,4 @@
 ﻿using CommunityToolkit.Maui.Alerts;
-using Microsoft.Maui.Controls.Platform;
-using System.Diagnostics;
 
 namespace AINarrativePainting.App.Services;
 
