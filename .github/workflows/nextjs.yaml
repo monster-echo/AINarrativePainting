@@ -3,11 +3,11 @@ name: Build NextJS Docker Image
 on:
   workflow_dispatch:  # Enables manual triggers
   push:
-    branches: [ main ]
+    branches: [ master ]
     paths:
       - 'src/AINarrativePainting.NextJS/**'
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
     paths:
       - 'src/AINarrativePainting.NextJS/**'
 
@@ -46,8 +46,8 @@ jobs:
         tags: |
           ghcr.io/${{ github.repository_owner }}/ainarrativepainting-nextjs:latest
           ghcr.io/${{ github.repository_owner }}/ainarrativepainting-nextjs:${{ github.sha }}
-        # cache-from: type=local,src=/tmp/.buildx-cache
-        # cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
     
     # Temp fix for cache handling
     - name: Move cache
