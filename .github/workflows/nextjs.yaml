@@ -10,7 +10,11 @@ on:
     branches: [ master ]
     paths:
       - 'src/AINarrativePainting.NextJS/**'
-
+# Add permissions block
+permissions:
+  contents: read
+  packages: write
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -48,6 +52,8 @@ jobs:
           ghcr.io/${{ github.repository_owner }}/ainarrativepainting-nextjs:${{ github.sha }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        labels: |
+          org.opencontainers.image.source=https://github.com/${{ github.repository }}
     
     # Temp fix for cache handling
     - name: Move cache
