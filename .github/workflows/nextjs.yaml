@@ -1,6 +1,7 @@
 name: Build NextJS Docker Image
 
 on:
+  workflow_dispatch:  # Enables manual triggers
   push:
     branches: [ main ]
     paths:
