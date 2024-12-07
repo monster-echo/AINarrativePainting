@@ -1,0 +1,7 @@
+{
+  "name": "PhotoHiresFix",
+  "title": "旧照片修复",
+  "description": "通过我们的旧照片修复功能，您可以轻松地将珍贵的回忆焕然一新。无论是褪色的家庭照片，还是破损的历史影像，我们都能让它们重现昔日的光彩。立即体验，让您的照片焕发新生！",
+  "type": "Comfy",
+  "workflowPath": "PhotoHiresFix.json"
+}
