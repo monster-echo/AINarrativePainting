@@ -5,7 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:AINarrativePainting.App"
     Shell.FlyoutBehavior="Disabled"
-    Title="AINarrativePainting.App">
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
 
     <ShellContent
         Title="Home"
