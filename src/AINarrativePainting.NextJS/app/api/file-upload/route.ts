@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server"
-import { client, getInfo } from "../utls/common"
+import { client, getInfo } from "../utils/common"
 
 export async function POST(request: NextRequest) {
   try {

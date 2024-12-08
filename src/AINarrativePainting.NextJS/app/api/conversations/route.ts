@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { client, getInfo, setSession } from "../utls/common"
+import { client, getInfo, setSession } from "../utils/common"
 
 export async function GET(request: NextRequest) {
   const { sessionId, user } = getInfo(request)
