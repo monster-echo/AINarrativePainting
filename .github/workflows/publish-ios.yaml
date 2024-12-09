@@ -7,12 +7,46 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-ios:
-    runs-on: macos-latest
-
+  build-react:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
+      # build workspace ./src/AINarrativePainting.React
+      - name: Install dependencies
+        run: |
+          npm install
+          npm run build
+        working-directory: src/AINarrativePainting.React
+
+      # copy dist to artifact
+      - uses: actions/upload-artifact@v3.0.0
+        with:
+          name: react-build
+          path: src/AINarrativePainting.React/dist
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      # copy react build to maui project
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # download artifact from previous step and copy to maui project
+      - uses: actions/download-artifact@v3.0.0
+        with:
+          name: react-build
+          path: src/AINarrativePainting.App/Resources/Raw/wwwroot
+
+      - name: list files
+        run: |
+          ls -la src/AINarrativePainting.App/Resources/Raw/wwwroot
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
