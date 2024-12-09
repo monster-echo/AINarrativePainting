@@ -44,7 +44,8 @@ jobs:
 
       - name: Build MAUI iOS
         run: |
-          dotnet build -f net9.0-ios -c Release \
+          dotnet build  src/AINarrativePainting.App/AINarrativePainting.App.csproj \
+           -f net9.0-ios -c Release \
           /p:ArchiveOnBuild=true \
           /p:RuntimeIdentifier=ios-arm64 \
           /p:CodesignKey="${{ secrets.APPLE_SIGNING_IDENTITY }}" \
@@ -53,7 +54,7 @@ jobs:
       - name: Upload to TestFlight
         uses: apple-actions/upload-testflight-build@v1
         with:
-          app-path: "bin/Release/net9.0-ios/ios-arm64/publish/*.ipa"
+          app-path: "src/AINarrativePainting.App/bin/Release/net9.0-ios/ios-arm64/publish/*.ipa"
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
@@ -61,4 +62,4 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.0.0
         with:
-          path: "bin/Release/net9.0-ios/ios-arm64/publish/*.ipa"
+          path: "src/AINarrativePainting.App/bin/Release/net9.0-ios/ios-arm64/publish/*.ipa"
