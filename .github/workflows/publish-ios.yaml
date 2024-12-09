@@ -43,12 +43,9 @@ jobs:
           api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
-      - name: Restore dependencies
-        run: dotnet restore src/AINarrativePainting.App/AINarrativePainting.App.csproj
-
       - name: Build MAUI iOS
         run: |
-          dotnet build  src/AINarrativePainting.App/AINarrativePainting.App.csproj \
+          dotnet publish  src/AINarrativePainting.App/AINarrativePainting.App.csproj \
            -f net9.0-ios -c Release \
           /p:ArchiveOnBuild=true \
           /p:RuntimeIdentifier=ios-arm64 \
