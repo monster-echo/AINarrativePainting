@@ -9,7 +9,25 @@ on:
 jobs:
   build-react:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.VERSION }}
+      display_version: ${{ steps.get_version.outputs.DISPLAY_VERSION }}
+      build_version: ${{ steps.get_version.outputs.BUILD_VERSION }}
     steps:
+      - name: Get version
+        id: get_version
+        run: |
+          # Strip v prefix: v1.0.1 -> 1.0.1
+          VERSION=${GITHUB_REF#refs/tags/v}
+          # Convert to build number: 1.0.1 -> 1000001
+          BUILD_VERSION=$(echo $VERSION | sed -e 's/\./ /g' | xargs printf "%d%03d%03d")
+          # Keep original tag: v1.0.1
+          DISPLAY_VERSION=${GITHUB_REF#refs/tags/}
+
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_OUTPUT
+          echo "DISPLAY_VERSION=$DISPLAY_VERSION" >> $GITHUB_OUTPUT
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -24,6 +42,8 @@ jobs:
           npm install
           npm run build
         working-directory: src/AINarrativePainting.React
+        env:
+          APP_VERSION: ${{ steps.get_version.outputs.VERSION }}
 
       # copy dist to artifact
       - uses: actions/upload-artifact@v3.0.0
@@ -81,11 +101,16 @@ jobs:
       - name: Build MAUI iOS
         run: |
           dotnet publish  src/AINarrativePainting.App/AINarrativePainting.App.csproj \
-           -f net9.0-ios -c Release \
+          -f net9.0-ios -c Release \
+          /p:ApplicationVersion=$APP_VERSION \
+          /p:ApplicationDisplayVersion=$APP_DISPLAY_VERSION \
           /p:ArchiveOnBuild=true \
           /p:RuntimeIdentifier=ios-arm64 \
           /p:CodesignKey="${{ secrets.APPLE_SIGNING_IDENTITY }}" \
           /p:CodesignProvision="${{ secrets.APPLE_PROVISIONING_PROFILE_NAME }}"
+        env:
+          APP_VERSION: ${{ needs.build-react.outputs.build_version }}
+          APP_DISPLAY_VERSION: ${{ needs.build-react.outputs.version }}
 
       - name: Upload to TestFlight
         uses: apple-actions/upload-testflight-build@v1
