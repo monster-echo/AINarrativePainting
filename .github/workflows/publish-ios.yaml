@@ -32,6 +32,7 @@ jobs:
           path: src/AINarrativePainting.React/dist
 
   build-ios:
+    needs: build-react
     runs-on: macos-latest
     steps:
       # copy react build to maui project
