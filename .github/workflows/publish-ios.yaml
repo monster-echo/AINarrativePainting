@@ -52,13 +52,13 @@ jobs:
           /p:CodesignKey="${{ secrets.APPLE_SIGNING_IDENTITY }}" \
           /p:CodesignProvision="${{ secrets.APPLE_PROVISIONING_PROFILE_NAME }}"
 
-      #   - name: Upload to TestFlight
-      #     uses: apple-actions/upload-testflight-build@v1
-      #     with:
-      #       app-path: "src/AINarrativePainting.App/bin/Release/net9.0-ios/ios-arm64/publish/*.ipa"
-      #       issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-      #       api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
-      #       api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+      - name: Upload to TestFlight
+        uses: apple-actions/upload-testflight-build@v1
+        with:
+          app-path: "src/AINarrativePainting.App/bin/Release/net9.0-ios/ios-arm64/publish/*.ipa"
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.0.0
