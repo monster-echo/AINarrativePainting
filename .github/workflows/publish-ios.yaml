@@ -1,0 +1,64 @@
+name: Publish MAUI iOS App
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Install MAUI Workload
+        run: |
+          dotnet workload install maui
+          dotnet workload install ios
+
+      - name: Install Apple Certificate
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.CERTIFICATES_P12_BASE64 }}
+          p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+
+      - name: Install Provisioning Profile
+        uses: apple-actions/download-provisioning-profiles@v1
+        with:
+          bundle-id: "art.aishuohua.app"
+          # profile-type: "IOS_APP_STORE"
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build MAUI iOS
+        run: |
+          dotnet build -f net9.0-ios -c Release \
+          /p:ArchiveOnBuild=true \
+          /p:RuntimeIdentifier=ios-arm64 \
+          /p:CodesignKey="${{ secrets.APPLE_SIGNING_IDENTITY }}" \
+          /p:CodesignProvision="${{ secrets.APPLE_PROVISIONING_PROFILE_NAME }}"
+
+      - name: Upload to TestFlight
+        uses: apple-actions/upload-testflight-build@v1
+        with:
+          app-path: "bin/Release/net9.0-ios/ios-arm64/publish/*.ipa"
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.0.0
+        with:
+          path: "bin/Release/net9.0-ios/ios-arm64/publish/*.ipa"
