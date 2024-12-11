@@ -1,10 +1,10 @@
 import { type NextRequest } from "next/server"
 import { ChatClient } from "dify-client"
 import { v4 } from "uuid"
-import { API_URL, APP_ID } from "@/config"
+import { API_URL } from "@/config"
 import { randomInt } from "crypto"
 
-const userPrefix = `user_${APP_ID}:`
+const userPrefix = `user_${345}:`
 
 export const getInfo = (request: NextRequest) => {
   // const sessionId = request.cookies.get("session_id")?.value || v4()
