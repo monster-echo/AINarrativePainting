@@ -1,7 +1,10 @@
 import { NextRequest } from "next/server"
-import { client, getInfo } from "../utils/common"
+import { getChatClient, getInfo } from "@/app/api/utils/common"
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ appId: string }> }
+) {
   const body = await request.json()
 
   const {
@@ -16,6 +19,8 @@ export async function POST(request: NextRequest) {
 
   console.log("user", user)
 
+  const client = getChatClient(parseInt((await params).appId))
+
   const response = await client.createChatMessage(
     inputs,
     query,
@@ -24,6 +29,10 @@ export async function POST(request: NextRequest) {
     conversationId,
     files
   )
+
+  console.log("response", response)
+
+  console.log("response.data", response.data)
 
   return new Response(response.data as any)
 }

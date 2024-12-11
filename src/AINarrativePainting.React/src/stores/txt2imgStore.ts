@@ -1,27 +1,35 @@
 import { create } from 'zustand'
 import { getMessages, sendMessage } from '../services/Conversations'
-import { ChatItem } from '../types/type'
+import { ChatItem, WorkflowRunningStatus, Annotation } from '../types/type'
 
 interface Txt2ImgState {
+  appId: number
   id: string
   name: string
   responding: boolean
   chatItems: ChatItem[]
   abortController?: AbortController
   isAgentModel: boolean
-  init: (id: string) => Promise<void>
+  setAppId: (appId: number, id: string) => void
+  init: (conversationId: string) => Promise<void>
   send: (message: string) => Promise<void>
   stop: () => Promise<void>
 }
 export const useTxt2ImgStore = create<Txt2ImgState>((set, get) => ({
+  appId: 0,
   id: '',
   name: '',
   responding: false,
   isAgentModel: false,
   chatItems: [],
   taskId: '',
-  init: async (id?: string) => {
-    const result = await getMessages({ conversationId: id })
+  setAppId: (appId: number, id: string) => {
+    set({ appId, id: id })
+  },
+  init: async (conversationId: string) => {
+    const result = await getMessages(get().appId, {
+      conversationId: conversationId,
+    })
     const { data } = result
     const loadedChatItems: ChatItem[] = []
     data.forEach((item: any) => {
@@ -84,14 +92,29 @@ export const useTxt2ImgStore = create<Txt2ImgState>((set, get) => ({
         chatItems: [...state.chatItems, questionItem, placeholderAnswerItem],
       }
     })
-    const responseItem = {
+    const responseItem: ChatItem = {
       id: `${Date.now()}`,
       content: '',
       agent_thoughts: [],
       message_files: [],
       isAnswer: true,
     }
+
+    const updateLastItem = () =>
+      set(state => {
+        return {
+          chatItems: [
+            ...state.chatItems.filter(
+              item =>
+                item.id !== placeholderAnswerId && item.id !== responseItem.id
+            ),
+            responseItem,
+          ],
+        }
+      })
+
     await sendMessage(
+      get().appId,
       {
         inputs: [],
         query: message,
@@ -124,15 +147,7 @@ export const useTxt2ImgStore = create<Txt2ImgState>((set, get) => ({
 
             console.log('newConversationId:', newConversationId)
           }
-          set({
-            chatItems: [
-              ...state.chatItems.filter(
-                item =>
-                  item.id !== placeholderAnswerId && item.id !== responseItem.id
-              ),
-              responseItem,
-            ],
-          })
+          updateLastItem()
         },
         onCompleted: (hasError?: boolean) => {
           console.log('onCompleted:', hasError)
@@ -143,17 +158,55 @@ export const useTxt2ImgStore = create<Txt2ImgState>((set, get) => ({
         },
         onFile: file => {
           console.log('onFile:', file)
+          const lastThought =
+            responseItem.agent_thoughts?.[
+              responseItem.agent_thoughts?.length - 1
+            ]
+          if (lastThought)
+            lastThought.message_files = [
+              ...(lastThought as any).message_files,
+              { ...file },
+            ]
+          updateLastItem()
         },
         onThought: thought => {
           set({ isAgentModel: true })
           console.log('onThought:', thought)
+          const response = responseItem as any
+          if (thought.message_id) {
+            response.id = thought.message_id
+          }
+          // responseItem.id = thought.message_id;
+          if (response.agent_thoughts.length === 0) {
+            response.agent_thoughts.push(thought)
+          } else {
+            const lastThought =
+              response.agent_thoughts[response.agent_thoughts.length - 1]
+            // thought changed but still the same thought, so update.
+            if (lastThought.id === thought.id) {
+              thought.thought = lastThought.thought
+              thought.message_files = lastThought.message_files
+              responseItem.agent_thoughts![response.agent_thoughts.length - 1] =
+                thought
+            } else {
+              responseItem.agent_thoughts!.push(thought)
+            }
+          }
+          updateLastItem()
         },
         onMessageEnd: messageEnd => {
           console.log('onMessageEnd:', messageEnd)
+          if (messageEnd.metadata?.annotation_reply) {
+            responseItem.id = messageEnd.id
+            responseItem.annotation = {
+              id: messageEnd.metadata.annotation_reply.id,
+              authorName: messageEnd.metadata.annotation_reply.account.name,
+            } as Annotation
+          }
+          updateLastItem()
         },
         onMessageReplace: messageReplace => {
           console.log('onMessageReplace:', messageReplace)
-
           set(state => {
             return {
               ...state,
@@ -171,7 +224,6 @@ export const useTxt2ImgStore = create<Txt2ImgState>((set, get) => ({
         },
         onError: () => {
           console.log('onError')
-
           // remove placeholder answer
           set(state => {
             return {
@@ -184,22 +236,36 @@ export const useTxt2ImgStore = create<Txt2ImgState>((set, get) => ({
         },
         onWorkflowStarted: ({ workflow_run_id, task_id }) => {
           console.log('onWorkflowStarted:', workflow_run_id, task_id)
+          responseItem.workflow_run_id = workflow_run_id
+          responseItem.workflowProcess = {
+            status: WorkflowRunningStatus.Running,
+            tracing: [],
+          }
+          updateLastItem()
         },
         onWorkflowFinished: ({ data }) => {
           console.log('onWorkflowFinished:', data)
+          responseItem.workflowProcess!.status =
+            data.status as WorkflowRunningStatus
+
+          updateLastItem()
         },
         onNodeStarted: ({ data }) => {
           console.log('onNodeStarted:', data)
+          responseItem.workflowProcess!.tracing!.push(data as any)
+          updateLastItem()
         },
         onNodeFinished: ({ data }) => {
           console.log('onNodeFinished:', data)
+          const currentIndex = responseItem.workflowProcess!.tracing!.findIndex(
+            item => item.node_id === data.node_id
+          )
+          responseItem.workflowProcess!.tracing[currentIndex] = data as any
+          updateLastItem()
         },
       }
     )
   },
 
-  stop: async () => {
-    const state = get()
-    state.abortController?.abort()
-  },
+  stop: async () => {},
 }))

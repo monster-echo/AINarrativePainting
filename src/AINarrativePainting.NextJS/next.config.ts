@@ -1,4 +1,5 @@
 import type { NextConfig } from "next"
+import { API_URL } from "./config"
 
 const nextConfig: NextConfig = {
   async headers() {
@@ -20,6 +21,16 @@ const nextConfig: NextConfig = {
               "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
           },
         ],
+      },
+    ]
+  },
+
+  rewrites: async () => {
+    return [
+      // rewrite /api/files/* to http://localhost:3001/files/*
+      {
+        source: "/api/files/:path*",
+        destination: `${API_URL.replace("/v1", "/")}/files/:path*`,
       },
     ]
   },

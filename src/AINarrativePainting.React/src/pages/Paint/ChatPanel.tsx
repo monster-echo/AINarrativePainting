@@ -1,37 +1,44 @@
 import {
   IonContent,
-  IonButton,
-  IonInput,
   IonFooter,
+  IonInput,
+  IonButton,
   IonIcon,
-  useIonToast,
-  IonSpinner,
 } from '@ionic/react'
-import { BackLayout } from '../../../components/layouts/BackLayout'
-import { sendSharp, stopSharp } from 'ionicons/icons'
-import { memo, useEffect, useRef, useState } from 'react'
-import { useTxt2ImgStore } from '../../../stores/txt2imgStore'
-import Chat from '../../../components/chat'
+import { stopSharp, sendSharp } from 'ionicons/icons'
+import { useEffect, useRef, useState } from 'react'
+import { useTxt2ImgStore } from '../../stores/txt2imgStore'
+import { App } from '../../services/Apps'
+import Chat from '../../components/chat'
 
-const Txt2Img = () => {
-  const id = localStorage.getItem('txt2img:conversationId')
+type ChatPanelProps = {
+  app: App
+}
+
+const ChatPanel = (props: ChatPanelProps) => {
+  const { app } = props
+
+  const id = localStorage.getItem(`paint:${app.id}:conversationId`)
   const chatItemsDomRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLIonContentElement>(null)
   const [inputText, setInputText] = useState<string>()
-
   const {
     id: conversationId,
     init,
+    setAppId,
     name,
     responding,
     send,
     stop,
     chatItems,
   } = useTxt2ImgStore()
+  useEffect(() => {
+    setAppId(app.id, id ?? '')
+  }, [app])
 
   useEffect(() => {
     if (conversationId)
-      localStorage.setItem('txt2img:conversationId', conversationId)
+      localStorage.setItem(`paint:${app.id}:conversationId`, conversationId)
   }, [conversationId])
 
   useEffect(() => {
@@ -41,12 +48,10 @@ const Txt2Img = () => {
       }
     }
   }, [id, chatItems])
-
   useEffect(() => {
     // scroll to bottom
     if (contentRef.current) contentRef.current.scrollToBottom()
   }, [chatItems, id])
-
   const handleSend = async () => {
     if (responding) {
       await stop()
@@ -75,15 +80,14 @@ const Txt2Img = () => {
       handleSend()
     }
   }
-
   return (
-    <BackLayout title="文生图">
+    <>
       <IonContent fullscreen ref={contentRef}>
         <div className="mb-16" ref={chatItemsDomRef}>
           <Chat items={chatItems} />
         </div>
       </IonContent>
-      <IonFooter className="pb-4 px-4">
+      <IonFooter className="pb-4 px-4 bg-gray-50">
         <IonInput
           color={'primary'}
           placeholder="请输入文本"
@@ -103,15 +107,15 @@ const Txt2Img = () => {
             onClick={handleSend}
           >
             {responding ? (
-              <IonIcon className="" icon={stopSharp}></IonIcon>
+              <IonIcon icon={stopSharp}></IonIcon>
             ) : (
-              <IonIcon className="" icon={sendSharp}></IonIcon>
+              <IonIcon icon={sendSharp}></IonIcon>
             )}
           </IonButton>
         </IonInput>
       </IonFooter>
-    </BackLayout>
+    </>
   )
 }
 
-export default memo(Txt2Img)
+export default ChatPanel

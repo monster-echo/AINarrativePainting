@@ -89,7 +89,7 @@ const Img2Img = () => {
           <Chat items={chatItems} />
         </div>
       </IonContent>
-      <IonFooter className="pb-8 px-4">
+      <IonFooter className="pb-4 px-4">
         <IonInput
           color={'primary'}
           placeholder="请输入文本"
@@ -109,9 +109,9 @@ const Img2Img = () => {
             onClick={handleSend}
           >
             {responding ? (
-              <IonIcon className="" icon={stopSharp}></IonIcon>
+              <IonIcon icon={stopSharp}></IonIcon>
             ) : (
-              <IonIcon className="" icon={sendSharp}></IonIcon>
+              <IonIcon icon={sendSharp}></IonIcon>
             )}
           </IonButton>
         </IonInput>

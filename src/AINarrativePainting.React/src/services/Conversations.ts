@@ -14,22 +14,28 @@ import {
 } from '../types/type'
 import { get, post, ssePost } from './Fetch'
 
-export const getConversations = async ({ limit = 20, firstId = '' }) => {
-  return (await get('conversations', {
+export const getConversations = async (
+  appId = 0,
+  { limit = 20, firstId = '' }
+) => {
+  return (await get(`apps/${appId}/conversations`, {
     params: { limit, first_id: firstId },
   })) as any
 }
 
-export const getMessages = async ({
-  conversationId,
-  limit = 20,
-  lastId = '',
-}: {
-  conversationId?: string
-  limit?: number
-  lastId?: string
-}) => {
-  return (await get('messages', {
+export const getMessages = async (
+  appId = 0,
+  {
+    conversationId,
+    limit = 20,
+    lastId = '',
+  }: {
+    conversationId?: string
+    limit?: number
+    lastId?: string
+  }
+) => {
+  return (await get(`apps/${appId}/messages`, {
     params: {
       conversation_id: conversationId,
       limit: limit,
@@ -38,21 +44,26 @@ export const getMessages = async ({
   })) as any
 }
 
-export const fetchAppParameters = async () => {
-  return (await get('parameters')) as any
+export const fetchAppParameters = async (appId = 0) => {
+  return (await get(`apps/${appId}/parameters`)) as any
 }
 
-export const updateFeedback = async ({
-  url,
-  body,
-}: {
-  url: string
-  body: FeedbackType
-}) => {
+export const updateFeedback = async (
+  appId = 0,
+  {
+    url,
+    body,
+  }: {
+    url: string
+    body: FeedbackType
+  }
+) => {
+  // todo: add app id to the url
   return post(url, { body })
 }
 
 export const sendMessage = async (
+  appId = 0,
   body: Record<string, any>,
   {
     onData,
@@ -83,7 +94,7 @@ export const sendMessage = async (
   }
 ) => {
   return ssePost(
-    'chat-messages',
+    `apps/${appId}/chat-messages`,
     {
       body: {
         ...body,

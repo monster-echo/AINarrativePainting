@@ -1,8 +1,12 @@
 import { NextRequest } from "next/server"
-import { client, getInfo } from "../utils/common"
+import { getChatClient, getInfo } from "@/app/api/utils/common"
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ appId: string }> }
+) {
   try {
+    const client = getChatClient(parseInt((await params).appId))
     const formData = await request.formData()
     const { user } = getInfo(request)
     formData.append("user", user)

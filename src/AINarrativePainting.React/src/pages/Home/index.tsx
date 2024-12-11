@@ -13,9 +13,16 @@ import { AppTitle } from '../../utils/consts'
 import Toast from '../../components/base/toast'
 import { getConversations } from '../../services/Conversations'
 import { API_ASSETS_PREFIX } from '../../config'
+import { useHomeStore } from '../../stores/homeStore'
+import { useEffect } from 'react'
 
 export const Home = () => {
   const [present] = useIonToast()
+  const { apps, initApps } = useHomeStore()
+
+  useEffect(() => {
+    initApps()
+  }, [])
 
   return (
     <SideMenuLayout title={AppTitle}>
@@ -28,19 +35,15 @@ export const Home = () => {
         <IonCardContent>
           <div className="flex overflow-x-auto w-full hide-scrollbar">
             <div className="flex gap-4 ">
-              <TileCard
-                title="文生图"
-                avatar={`${API_ASSETS_PREFIX}/text2img/avatar.png`}
-                image={`${API_ASSETS_PREFIX}/text2img/background.png`}
-                link="/paint/txt2img"
-              ></TileCard>
-
-              <TileCard
-                title="图生图"
-                avatar={`${API_ASSETS_PREFIX}/img2img/avatar.png`}
-                image={`${API_ASSETS_PREFIX}/img2img/background.png`}
-                link="/paint/img2img"
-              ></TileCard>
+              {apps.map(app => (
+                <TileCard
+                  key={app.id}
+                  title={app.name}
+                  avatar={`${API_ASSETS_PREFIX}/${app.avatar}`}
+                  image={`${API_ASSETS_PREFIX}/${app.image}`}
+                  link={`/paint/${app.id}`}
+                ></TileCard>
+              ))}
             </div>
           </div>
         </IonCardContent>

@@ -1,12 +1,4 @@
-import {
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
-  IonContent,
-} from '@ionic/react'
-import { memo } from 'react'
+import { IonCard, IonCardContent } from '@ionic/react'
 import { ChatItem } from '../../types/type'
 
 const Question = ({ item }: { item: ChatItem }) => {

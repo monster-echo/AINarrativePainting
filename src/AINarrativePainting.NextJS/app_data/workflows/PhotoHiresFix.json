@@ -1,7 +1,0 @@
-{
-  "name": "PhotoHiresFix",
-  "title": "高清修复",
-  "description": "将您的照片提升至高清晰度，展现每一个细节之美。",
-  "type": "Comfy",
-  "workflowPath": "PhotoHiresFix.json"
-}
