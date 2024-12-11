@@ -4,13 +4,13 @@ import { v4 } from "uuid"
 import { API_URL } from "@/config"
 import { randomInt } from "crypto"
 
-const userPrefix = `user_${345}:`
 
-export const getInfo = (request: NextRequest) => {
+export const getInfo = (request: NextRequest, appId: number) => {
   // const sessionId = request.cookies.get("session_id")?.value || v4()
   // todo: implement user session
   const sessionId = "123"
-  const user = userPrefix + sessionId
+
+  const user = `user_${appId}:` + sessionId
   return {
     sessionId,
     user,

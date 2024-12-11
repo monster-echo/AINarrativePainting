@@ -8,9 +8,10 @@ export async function POST(
   const body = await request.json()
   const { name } = body
   const { conversationId } = await params
-  const { user } = getInfo(request)
 
-  const client = getChatClient(parseInt((await params).appId))
+  const appId = parseInt((await params).appId)
+  const { user } = getInfo(request, appId)
+  const client = getChatClient(appId)
 
   // auto generate name
   const { data } = await client.renameConversation(conversationId, name, user)

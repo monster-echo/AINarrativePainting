@@ -6,11 +6,14 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ appId: string }> }
 ) {
-  const { sessionId, user } = getInfo(request)
+
+  const appId = parseInt((await params).appId)
+
+  const { sessionId, user } = getInfo(request, appId)
   const { searchParams } = new URL(request.url)
   const conversationId = searchParams.get("conversation_id")
 
-  const client = getChatClient(parseInt((await params).appId))
+  const client = getChatClient(appId)
   const { data }: any = await client.getConversationMessages(
     user,
     conversationId as string

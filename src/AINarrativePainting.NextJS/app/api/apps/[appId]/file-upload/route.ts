@@ -6,9 +6,11 @@ export async function POST(
   { params }: { params: Promise<{ appId: string }> }
 ) {
   try {
-    const client = getChatClient(parseInt((await params).appId))
+    const appId = parseInt((await params).appId)
+    const client = getChatClient(appId)
     const formData = await request.formData()
-    const { user } = getInfo(request)
+
+    const { user } = getInfo(request, appId)
     formData.append("user", user)
     const res = await client.fileUpload(formData)
     return new Response(res.data.id as any)
