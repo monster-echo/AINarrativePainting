@@ -6,7 +6,7 @@ import {
   IonIcon,
 } from '@ionic/react'
 import { stopSharp, sendSharp } from 'ionicons/icons'
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { useTxt2ImgStore } from '../../stores/txt2imgStore'
 import { App } from '../../services/Apps'
 import Chat from '../../components/chat'
@@ -17,24 +17,16 @@ type ChatPanelProps = {
 
 const ChatPanel = (props: ChatPanelProps) => {
   const { app } = props
-
-  const id = localStorage.getItem(`paint:${app.id}:conversationId`)
   const chatItemsDomRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLIonContentElement>(null)
   const [inputText, setInputText] = useState<string>()
   const {
     id: conversationId,
-    init,
-    setAppId,
-    name,
     responding,
     send,
     stop,
     chatItems,
   } = useTxt2ImgStore()
-  useEffect(() => {
-    setAppId(app.id, id ?? '')
-  }, [app])
 
   useEffect(() => {
     if (conversationId)
@@ -42,16 +34,9 @@ const ChatPanel = (props: ChatPanelProps) => {
   }, [conversationId])
 
   useEffect(() => {
-    if (chatItems.length === 0) {
-      if (id) {
-        init(id)
-      }
-    }
-  }, [id, chatItems])
-  useEffect(() => {
     // scroll to bottom
     if (contentRef.current) contentRef.current.scrollToBottom()
-  }, [chatItems, id])
+  }, [chatItems])
   const handleSend = async () => {
     if (responding) {
       await stop()
@@ -71,15 +56,14 @@ const ChatPanel = (props: ChatPanelProps) => {
       }
     }
   }
-
   const handleKeyDown = (e: any) => {}
-
   const handleKeyUp = (e: any) => {
     if (e.key === 'Enter') {
       e.preventDefault()
       handleSend()
     }
   }
+
   return (
     <>
       <IonContent fullscreen ref={contentRef}>
@@ -118,4 +102,26 @@ const ChatPanel = (props: ChatPanelProps) => {
   )
 }
 
-export default ChatPanel
+const ChatAppPanel = (props: { app: App }) => {
+  const { id } = props.app
+  const [loaded, setLoaded] = useState(false)
+  const { init } = useTxt2ImgStore()
+  useEffect(() => {
+    const load = async () => {
+      if (!loaded) {
+        await init(id)
+        setLoaded(true)
+      }
+    }
+    load()
+  }, [id, loaded])
+
+  return (
+    <>
+      {loaded && <ChatPanel app={props.app} />}
+      {!loaded && <div>Loading...</div>}
+    </>
+  )
+}
+
+export default memo(ChatAppPanel)

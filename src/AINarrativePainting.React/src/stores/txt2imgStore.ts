@@ -10,26 +10,48 @@ interface Txt2ImgState {
   chatItems: ChatItem[]
   abortController?: AbortController
   isAgentModel: boolean
-  setAppId: (appId: number, id: string) => void
-  init: (conversationId: string) => Promise<void>
+  taskId: string
+  init: (appId: number) => Promise<void>
   send: (message: string) => Promise<void>
   stop: () => Promise<void>
 }
-export const useTxt2ImgStore = create<Txt2ImgState>((set, get) => ({
+
+const initialState = {
   appId: 0,
   id: '',
   name: '',
   responding: false,
-  isAgentModel: false,
   chatItems: [],
+  isAgentModel: false,
   taskId: '',
-  setAppId: (appId: number, id: string) => {
-    set({ appId, id: id })
-  },
-  init: async (conversationId: string) => {
-    const result = await getMessages(get().appId, {
-      conversationId: conversationId,
+}
+
+export const useTxt2ImgStore = create<Txt2ImgState>((set, get) => ({
+  ...initialState,
+  init: async (appId: number) => {
+    // set new state
+    set({
+      ...initialState,
+      appId: appId,
     })
+
+    const conversationId = localStorage.getItem(`paint:${appId}:conversationId`)
+    if (!conversationId || conversationId === '') {
+      return
+    }
+
+    let result: any
+    try {
+      result = await getMessages(get().appId, {
+        conversationId: conversationId,
+      })
+    } catch (e) {
+      console.log(
+        `Couldn't load messages by conversation id: ${conversationId}`
+      )
+      return
+    }
+
     const { data } = result
     const loadedChatItems: ChatItem[] = []
     data.forEach((item: any) => {
@@ -144,7 +166,10 @@ export const useTxt2ImgStore = create<Txt2ImgState>((set, get) => ({
             set({
               id: newConversationId,
             })
-
+            localStorage.setItem(
+              `paint:${state.appId}:conversationId`,
+              newConversationId
+            )
             console.log('newConversationId:', newConversationId)
           }
           updateLastItem()

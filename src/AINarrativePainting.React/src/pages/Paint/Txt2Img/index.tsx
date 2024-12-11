@@ -4,8 +4,6 @@ import {
   IonInput,
   IonFooter,
   IonIcon,
-  useIonToast,
-  IonSpinner,
 } from '@ionic/react'
 import { BackLayout } from '../../../components/layouts/BackLayout'
 import { sendSharp, stopSharp } from 'ionicons/icons'
@@ -21,8 +19,6 @@ const Txt2Img = () => {
 
   const {
     id: conversationId,
-    init,
-    name,
     responding,
     send,
     stop,
@@ -33,14 +29,6 @@ const Txt2Img = () => {
     if (conversationId)
       localStorage.setItem('txt2img:conversationId', conversationId)
   }, [conversationId])
-
-  useEffect(() => {
-    if (chatItems.length === 0) {
-      if (id) {
-        init(id)
-      }
-    }
-  }, [id, chatItems])
 
   useEffect(() => {
     // scroll to bottom

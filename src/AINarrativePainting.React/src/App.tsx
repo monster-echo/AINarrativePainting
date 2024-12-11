@@ -36,7 +36,6 @@ import { useCallback, useEffect } from 'react'
 import { Home } from './pages/Home'
 import { NotFound } from './pages/NotFound'
 import Txt2Img from './pages/Paint/Txt2Img'
-import Img2Img from './pages/Paint/Img2Img'
 import PaintPage from './pages/Paint'
 
 setupIonicReact()
@@ -79,7 +78,6 @@ const App: React.FC = () => {
           <Route path="/404" component={NotFound} exact />
           <Route exact path="/" render={() => <Redirect to="/home" />} />
           <Route path="/paint/txt2img" component={Txt2Img} exact />
-          <Route path="/paint/img2img" component={Img2Img} />
           <Route path="/paint/:appid" component={PaintPage} />
           <Route render={() => <Redirect to="/404" />} />
         </IonRouterOutlet>

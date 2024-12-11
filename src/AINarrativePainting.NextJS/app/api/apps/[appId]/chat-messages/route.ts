@@ -32,9 +32,5 @@ export async function POST(
     files
   )
 
-  console.log("response", response)
-
-  console.log("response.data", response.data)
-
   return new Response(response.data as any)
 }
