@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 
 **/wwwroot/*
+.DS_Store

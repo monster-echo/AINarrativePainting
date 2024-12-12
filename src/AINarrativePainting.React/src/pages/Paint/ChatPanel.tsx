@@ -7,31 +7,23 @@ import {
 } from '@ionic/react'
 import { stopSharp, sendSharp } from 'ionicons/icons'
 import { memo, useEffect, useRef, useState } from 'react'
-import { useTxt2ImgStore } from '../../stores/txt2imgStore'
 import { App } from '../../services/Apps'
 import Chat from '../../components/chat'
+import usePaintAppsStore, { PaintAppState } from '../../stores/paintStore'
 
 type ChatPanelProps = {
-  app: App
+  appId: number
+  app: PaintAppState
 }
 
 const ChatPanel = (props: ChatPanelProps) => {
-  const { app } = props
+  const { appId, app } = props
   const chatItemsDomRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLIonContentElement>(null)
   const [inputText, setInputText] = useState<string>()
-  const {
-    id: conversationId,
-    responding,
-    send,
-    stop,
-    chatItems,
-  } = useTxt2ImgStore()
+  const { responding, chatItems } = app
 
-  useEffect(() => {
-    if (conversationId)
-      localStorage.setItem(`paint:${app.id}:conversationId`, conversationId)
-  }, [conversationId])
+  const { send, stop } = usePaintAppsStore()
 
   useEffect(() => {
     // scroll to bottom
@@ -39,7 +31,7 @@ const ChatPanel = (props: ChatPanelProps) => {
   }, [chatItems])
   const handleSend = async () => {
     if (responding) {
-      await stop()
+      await stop(appId)
     } else {
       if (inputText != undefined) {
         console.log('inputText:', inputText)
@@ -49,7 +41,7 @@ const ChatPanel = (props: ChatPanelProps) => {
         }
         try {
           setInputText('')
-          await send(tempText)
+          await send(appId, tempText)
         } catch (e) {
           setInputText(tempText)
         }
@@ -104,24 +96,16 @@ const ChatPanel = (props: ChatPanelProps) => {
 
 const ChatAppPanel = (props: { app: App }) => {
   const { id } = props.app
-  const [loaded, setLoaded] = useState(false)
-  const { init } = useTxt2ImgStore()
-  useEffect(() => {
-    const load = async () => {
-      if (!loaded) {
-        await init(id)
-        setLoaded(true)
-      }
-    }
-    load()
-  }, [id, loaded])
 
-  return (
-    <>
-      {loaded && <ChatPanel app={props.app} />}
-      {!loaded && <div>Loading...</div>}
-    </>
-  )
+  const { getApp } = usePaintAppsStore()
+
+  const app = getApp(id)
+
+  if (!app) {
+    return <div>加载中...</div>
+  }
+
+  return <ChatPanel appId={id} app={app} />
 }
 
 export default memo(ChatAppPanel)

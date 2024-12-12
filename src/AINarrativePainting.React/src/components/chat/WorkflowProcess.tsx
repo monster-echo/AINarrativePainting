@@ -32,7 +32,7 @@ const WorkflowProcess = ({
     <IonAccordionGroup className="mb-4">
       <IonAccordion value="first">
         <IonItem slot="header" color="light" className="flex items-center">
-          <IonLabel>Workflow process</IonLabel>
+          <IonLabel>Workflow process </IonLabel>
           <div className="mx-2">
             {running && <IonSpinner name="dots"></IonSpinner>}
             {succeeded && (

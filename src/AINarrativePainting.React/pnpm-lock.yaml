@@ -32,6 +32,9 @@ dependencies:
   '@types/react-router-dom':
     specifier: ^5.3.3
     version: 5.3.3
+  immer:
+    specifier: ^10.1.1
+    version: 10.1.1
   ionicons:
     specifier: ^7.0.0
     version: 7.4.0
@@ -76,7 +79,7 @@ dependencies:
     version: 6.0.0
   zustand:
     specifier: ^5.0.2
-    version: 5.0.2(@types/react@18.3.12)(react@18.3.1)
+    version: 5.0.2(@types/react@18.3.12)(immer@10.1.1)(react@18.3.1)
 
 devDependencies:
   '@capacitor/cli':
@@ -4456,6 +4459,10 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /immer@10.1.1:
+    resolution: {integrity: sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==}
+    dev: false
+
   /import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -7908,7 +7915,7 @@ packages:
     engines: {node: '>=12.20'}
     dev: true
 
-  /zustand@5.0.2(@types/react@18.3.12)(react@18.3.1):
+  /zustand@5.0.2(@types/react@18.3.12)(immer@10.1.1)(react@18.3.1):
     resolution: {integrity: sha512-8qNdnJVJlHlrKXi50LDqqUNmUbuBjoKLrYQBnoChIbVph7vni+sY+YpvdjXG9YLd/Bxr6scMcR+rm5H3aSqPaw==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
@@ -7927,6 +7934,7 @@ packages:
         optional: true
     dependencies:
       '@types/react': 18.3.12
+      immer: 10.1.1
       react: 18.3.1
     dev: false
 

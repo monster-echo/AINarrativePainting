@@ -10,19 +10,25 @@ import {
 import { SideMenuLayout } from '../../components/layouts/SideMenuLayout'
 import { TileCard } from '../../components/TileCard'
 import { AppTitle } from '../../utils/consts'
-import Toast from '../../components/base/toast'
-import { getConversations } from '../../services/Conversations'
 import { API_ASSETS_PREFIX } from '../../config'
 import { useHomeStore } from '../../stores/homeStore'
 import { useEffect } from 'react'
+import usePaintAppsStore from '../../stores/paintStore'
 
 export const Home = () => {
   const [present] = useIonToast()
   const { apps, initApps } = useHomeStore()
 
+  const { init } = usePaintAppsStore()
+
   useEffect(() => {
-    initApps()
-  }, [])
+    const load = async () => {
+      const apps = await initApps()
+      await init(apps.map(app => app.id))
+    }
+
+    load()
+  }, [initApps, init])
 
   return (
     <SideMenuLayout title={AppTitle}>
