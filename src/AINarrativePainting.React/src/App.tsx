@@ -38,7 +38,6 @@ import { NotFound } from './pages/NotFound'
 import PaintPage from './pages/Paint'
 import ProtectedRoute from './components/routes/ProtectedRoute'
 import Login from './pages/Login'
-import { Auth0Provider } from '@auth0/auth0-react'
 
 setupIonicReact()
 
@@ -73,26 +72,18 @@ const App: React.FC = () => {
     }
   }, [handleHybridMessage])
   return (
-    <Auth0Provider
-      domain="dev-fyyi5nrf3rgbhil3.us.auth0.com"
-      clientId="jNmTMpE3KYH6FTTE3rnYTebFxPEEwPSG"
-      authorizationParams={{
-        redirect_uri: window.location.origin,
-      }}
-    >
-      <IonApp>
-        <IonReactRouter>
-          <IonRouterOutlet>
-            <ProtectedRoute path="/home" component={Home} exact />
-            <Route path="/login" component={Login} exact />
-            <Route path="/404" component={NotFound} exact />
-            <Route exact path="/" render={() => <Redirect to="/home" />} />
-            <ProtectedRoute path="/paint/:appid" component={PaintPage} />
-            <Route render={() => <Redirect to="/404" />} />
-          </IonRouterOutlet>
-        </IonReactRouter>
-      </IonApp>
-    </Auth0Provider>
+    <IonApp>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <ProtectedRoute path="/home" component={Home} exact />
+          <Route path="/login" component={Login} exact />
+          <Route path="/404" component={NotFound} exact />
+          <Route exact path="/" render={() => <Redirect to="/home" />} />
+          <ProtectedRoute path="/paint/:appid" component={PaintPage} />
+          <Route render={() => <Redirect to="/404" />} />
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </IonApp>
   )
 }
 

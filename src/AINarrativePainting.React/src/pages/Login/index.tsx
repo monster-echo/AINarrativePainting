@@ -9,36 +9,11 @@ import {
   IonInput,
   IonItem,
   IonPage,
-  IonToolbar,
 } from '@ionic/react'
-import {
-  logInSharp,
-  logoAndroid,
-  logoApple,
-  logoGoogle,
-  logoWechat,
-  sendSharp,
-  trailSignSharp,
-} from 'ionicons/icons'
-import React from 'react'
+import { logInSharp, logoApple, logoGoogle } from 'ionicons/icons'
 import { AppTitle } from '../../utils/consts'
-import { useAuth0 } from '@auth0/auth0-react'
 
 const LoginPage = () => {
-  const { loginWithRedirect, isAuthenticated, logout, getAccessTokenSilently } =
-    useAuth0()
-
-  return (
-    <>
-      {!isAuthenticated && (
-        <button onClick={() => loginWithRedirect()}>Log In</button>
-      )}
-      {isAuthenticated && (
-        <button onClick={() => logout()}>Authenticated</button>
-      )}
-      <div>{JSON.stringify(getAccessTokenSilently())}</div>
-    </>
-  )
   return (
     <IonPage>
       <IonContent>
