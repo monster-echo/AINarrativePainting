@@ -38,6 +38,7 @@ import { NotFound } from './pages/NotFound'
 import PaintPage from './pages/Paint'
 import ProtectedRoute from './components/routes/ProtectedRoute'
 import Login from './pages/Login'
+import Test from './pages/Test'
 
 setupIonicReact()
 
@@ -71,16 +72,19 @@ const App: React.FC = () => {
       )
     }
   }, [handleHybridMessage])
+
   return (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <ProtectedRoute path="/home" component={Home} exact />
-          <Route path="/login" component={Login} exact />
+          {/* <ProtectedRoute path="/home" component={Home} exact /> */}
+          <Route path="/home" component={Home} exact />
+          <Route path="/test" component={Test} exact />
+          <Route path="/login" component={Login} />
           <Route path="/404" component={NotFound} exact />
           <Route exact path="/" render={() => <Redirect to="/home" />} />
           <ProtectedRoute path="/paint/:appid" component={PaintPage} />
-          <Route render={() => <Redirect to="/404" />} />
+          {/* <Route render={() => <Redirect to="/404" />} /> */}
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>

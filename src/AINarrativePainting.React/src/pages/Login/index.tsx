@@ -1,86 +1,53 @@
-import {
-  IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardTitle,
-  IonContent,
-  IonFooter,
-  IonIcon,
-  IonInput,
-  IonItem,
-  IonPage,
-} from '@ionic/react'
-import { logInSharp, logoApple, logoGoogle } from 'ionicons/icons'
+import { IonContent, IonPage } from '@ionic/react'
+import { Auth } from '@supabase/auth-ui-react'
+import { ThemeSupa } from '@supabase/auth-ui-shared'
+import { useEffect, useState } from 'react'
+import supabase from '../../services/auth/supabase-auth'
 import { AppTitle } from '../../utils/consts'
+import { Redirect } from 'react-router'
+import { useAuthStore } from '../../stores/authStore'
 
-const LoginPage = () => {
+const Login = (props: any) => {
+  const { session, setSession } = useAuthStore()
+
+  // get returnUrl from query params
+  const returnUrl = new URLSearchParams(window.location.search).get('returnUrl')
+
+  useEffect(() => {
+    const subscribe = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session)
+    })
+    return () => {
+      subscribe.data.subscription.unsubscribe()
+    }
+  }, [])
+
   return (
     <IonPage>
-      <IonContent>
-        <div className="mt-48">
-          <IonCard className="m-4 p-4">
-            <IonCardTitle className="text-center">{AppTitle}</IonCardTitle>
-            <IonCardContent>
-              <IonItem className="mb-4">
-                <IonInput
-                  label="用户名"
-                  labelPlacement="floating"
-                  placeholder="填写用户名"
-                  name="username"
-                  type="text"
-                />
-              </IonItem>
-              <IonItem className="mb-4">
-                <IonInput
-                  label="密码"
-                  name="password"
-                  labelPlacement="floating"
-                  placeholder="填写密码"
-                  type="password"
-                />
-              </IonItem>
+      <IonContent className="ion-padding ">
+        <div className="">
+          <div className="text-center mt-32">
+            <h3 className="text-lg font-semibold">{AppTitle}</h3>
+          </div>
 
-              {/* forget password */}
-              <IonButton
-                size="small"
-                fill="clear"
-                className="float-end mb-4"
-                onClick={() => {
-                  // forgetPassword()
-                }}
-              >
-                忘记密码?
-              </IonButton>
-
-              <IonButton
-                color={'light'}
-                expand="block"
-                className="mx-4"
-                onClick={() => {
-                  // signIn()
-                }}
-              >
-                <IonIcon
-                  icon={logInSharp}
-                  slot="end"
-                  className="text-gray-500"
-                />
-                登录
-              </IonButton>
-            </IonCardContent>
-          </IonCard>
+          <Auth
+            supabaseClient={supabase}
+            appearance={{
+              theme: ThemeSupa,
+              variables: {
+                default: {},
+              },
+            }}
+            localization={{
+              variables: {},
+            }}
+            providers={['github']}
+            redirectTo={window.location.origin}
+          />
         </div>
       </IonContent>
-      <IonFooter className="my-16 flex  justify-center ">
-        <IonButton fill="clear" color={'dark'}>
-          <IonIcon icon={logoApple} />
-        </IonButton>
-        <IonButton fill="clear" color={'success'} onClick={() => {}}>
-          <IonIcon icon={logoGoogle} />
-        </IonButton>
-      </IonFooter>
     </IonPage>
   )
 }
 
-export default LoginPage
+export default Login

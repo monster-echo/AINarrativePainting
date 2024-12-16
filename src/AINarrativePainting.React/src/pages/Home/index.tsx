@@ -14,19 +14,28 @@ import { API_ASSETS_PREFIX } from '../../config'
 import { useHomeStore } from '../../stores/homeStore'
 import { useEffect } from 'react'
 import usePaintAppsStore from '../../stores/paintStore'
+import supabase from '../../services/auth/supabase-auth'
+import { useAuthStore } from '../../stores/authStore'
 
 export const Home = () => {
-  const [present] = useIonToast()
   const { apps, initApps } = useHomeStore()
 
   const { init } = usePaintAppsStore()
+
+  const { session, setSession } = useAuthStore()
 
   useEffect(() => {
     const load = async () => {
       const apps = await initApps()
       await init(apps.map(app => app.id))
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession()
+      if (!error && session) {
+        setSession(session)
+      }
     }
-
     load()
   }, [initApps, init])
 

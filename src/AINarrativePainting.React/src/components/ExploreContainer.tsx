@@ -23,7 +23,7 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
 
   const handleGetStringValue = async () => {
     const value = await getStringValue("key")
-    debugger
+    
 
     await showToast(`Value: ${value}`)
   }

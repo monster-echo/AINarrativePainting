@@ -11,7 +11,6 @@ const invokeDotNetMethod = async (
     const result = await win.HybridWebView.InvokeDotNet(methodName, paramValues)
 
     if (result.Result) {
-      debugger
       return result.Result
     }
   } else {
