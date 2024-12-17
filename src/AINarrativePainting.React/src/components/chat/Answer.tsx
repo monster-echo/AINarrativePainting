@@ -104,9 +104,15 @@ const Answer = ({
         item.id,
         item.share ? false : true
       )
-      showToast(`已分享`, 1000)
+      showToast({
+        message: item.share ? `已取消分享` : `已分享`,
+        position: 'top',
+      })
     } catch (error) {
-      showToast(`分享失败`, 1000)
+      showToast({
+        message: item.share ? `取消分享失败` : `分享失败`,
+        position: 'top',
+      })
     } finally {
       setShareLoading(false)
     }
@@ -121,9 +127,15 @@ const Answer = ({
         item.id,
         item.heart ? false : true
       )
-      showToast(`已喜欢`, 1000)
+      showToast({
+        message: item.heart ? `已取消喜欢` : `已喜欢`,
+        position: 'top',
+      })
     } catch (error) {
-      showToast(`喜欢失败`, 1000)
+      showToast({
+        message: item.heart ? `取消喜欢失败` : `喜欢失败`,
+        position: 'top',
+      })
     } finally {
       setHeartLoading(false)
     }
@@ -136,50 +148,48 @@ const Answer = ({
   return (
     <div className="flex justify-start ">
       <IonCard className="m-0 relative w-full">
-        <IonCardContent>
-          {workflowProcess && (
-            <WorkflowProcess data={workflowProcess} hideInfo />
-          )}
-          {isAgentMode ? (
-            agentModeAnswer
-          ) : (
-            <Markdown content={content} onImageClick={handleImageClick} />
-          )}
-        </IonCardContent>
-        <IonCardContent className="pt-0">
-          <div className="flex justify-end w-full whitespace-nowrap overflow-x-auto hide-scrollbar">
-            <LoadingButton
-              size="small"
-              color={'dark'}
-              fill="clear"
-              onClick={handleShare}
-              loading={shareLoading}
-            >
-              {(item as any).share ? (
-                <div className="text-red-400">
-                  <IonIcon icon={shareSocialSharp}></IonIcon>
-                </div>
-              ) : (
-                <IonIcon icon={shareSocialOutline}></IonIcon>
-              )}
-            </LoadingButton>
-            <LoadingButton
-              size="small"
-              color={'dark'}
-              fill="clear"
-              onClick={handleHeart}
-              loading={heartLoading}
-            >
-              {(item as any).heart ? (
-                <div className="text-red-400">
+        {workflowProcess && <WorkflowProcess data={workflowProcess} hideInfo />}
+        {isAgentMode ? (
+          agentModeAnswer
+        ) : (
+          <Markdown content={content} onImageClick={handleImageClick} />
+        )}
+        {(!workflowProcess || workflowProcess.status === 'succeeded') && (
+          <IonCardContent className="">
+            <div className="flex justify-end w-full whitespace-nowrap overflow-x-auto hide-scrollbar">
+              <LoadingButton
+                size="small"
+                color={'dark'}
+                fill="clear"
+                onClick={handleShare}
+                loading={shareLoading}
+              >
+                {(item as any).share ? (
+                  <div className="text-red-400">
+                    <IonIcon icon={shareSocialSharp}></IonIcon>
+                  </div>
+                ) : (
+                  <IonIcon icon={shareSocialOutline}></IonIcon>
+                )}
+              </LoadingButton>
+              <LoadingButton
+                size="small"
+                color={'dark'}
+                fill="clear"
+                onClick={handleHeart}
+                loading={heartLoading}
+              >
+                {(item as any).heart ? (
+                  <div className="text-red-400">
+                    <IonIcon icon={heartOutline}></IonIcon>
+                  </div>
+                ) : (
                   <IonIcon icon={heartOutline}></IonIcon>
-                </div>
-              ) : (
-                <IonIcon icon={heartOutline}></IonIcon>
-              )}
-            </LoadingButton>
-          </div>
-        </IonCardContent>
+                )}
+              </LoadingButton>
+            </div>
+          </IonCardContent>
+        )}
       </IonCard>
     </div>
   )

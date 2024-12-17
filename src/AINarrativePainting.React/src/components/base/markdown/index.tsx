@@ -54,7 +54,7 @@ export function Markdown(props: {
                   src={src}
                   alt={alt}
                   title={title}
-                  className="w-full rounded-md"
+                  className="w-full rounded-t-md"
                 />
               </PhotoView>
             )

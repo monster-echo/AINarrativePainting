@@ -18,30 +18,17 @@ type ChatPanelProps = {
 }
 const ChatPanel = (props: ChatPanelProps) => {
   const { appId, app } = props
-  const chatItemsDomRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLIonContentElement>(null)
   const [inputText, setInputText] = useState<string>()
   const { responding, chatItems } = app
   const { send, stop } = usePaintAppsStore()
 
   useEffect(() => {
-    const scrollToBottom = async () => {
-      const content = contentRef.current!
-      const scrollElement = await content.getScrollElement()
-      const scrollHeight = scrollElement.scrollHeight
-      const scrollTop = scrollElement.scrollTop
-      const clientHeight = scrollElement.clientHeight
-
-      // If user is near bottom (within 100px), auto scroll
-      // if (scrollHeight - scrollTop - clientHeight < 500) {
-      content.scrollToBottom()
-      // }
-    }
-    // scroll to bottom
     if (contentRef.current) {
-      scrollToBottom()
+      contentRef.current.scrollToBottom(300)
     }
-  }, [chatItems])
+  }, [chatItems.length])
+
   const handleSend = async () => {
     if (responding) {
       await stop(appId)
@@ -72,7 +59,7 @@ const ChatPanel = (props: ChatPanelProps) => {
   return (
     <>
       <IonContent fullscreen ref={contentRef}>
-        <div className="mb-16" ref={chatItemsDomRef}>
+        <div className="mb-16">
           <ChatContextProvider
             appId={appId}
             conversationId={app.conversationId}
