@@ -4,14 +4,12 @@ import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { useEffect, useState } from 'react'
 import supabase from '../../services/auth/supabase-auth'
 import { AppTitle } from '../../utils/consts'
-import { Redirect } from 'react-router'
 import { useAuthStore } from '../../stores/authStore'
 
 const Login = (props: any) => {
   const { session, setSession } = useAuthStore()
-
-  // get returnUrl from query params
-  const returnUrl = new URLSearchParams(window.location.search).get('returnUrl')
+  const returnUrl =
+    new URLSearchParams(window.location.search).get('returnUrl') ?? '/'
 
   useEffect(() => {
     const subscribe = supabase.auth.onAuthStateChange((event, session) => {
@@ -28,6 +26,7 @@ const Login = (props: any) => {
         <div className="">
           <div className="text-center mt-32">
             <h3 className="text-lg font-semibold">{AppTitle}</h3>
+            {returnUrl}
           </div>
 
           <Auth
@@ -42,7 +41,7 @@ const Login = (props: any) => {
               variables: {},
             }}
             providers={['github']}
-            redirectTo={window.location.origin}
+            redirectTo={returnUrl}
           />
         </div>
       </IonContent>
