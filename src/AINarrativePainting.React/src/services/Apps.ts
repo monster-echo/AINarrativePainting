@@ -10,6 +10,16 @@ export type App = {
   category: string
 }
 
+export type PromptImage = {
+  prompt: string
+  filenames: string[]
+}
+
 export const getApps = async () => {
   return (await get('apps', {})) as App[]
+}
+
+export const getImages = async () => {
+  const { images } = (await get('apps/images', {})) as { images: PromptImage[] }
+  return images
 }

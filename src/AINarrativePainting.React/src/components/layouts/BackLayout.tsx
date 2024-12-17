@@ -1,11 +1,13 @@
 import {
   IonBackButton,
+  IonButton,
   IonButtons,
   IonHeader,
   IonPage,
   IonTitle,
   IonToolbar,
 } from '@ionic/react'
+import { useHistory, useLocation } from 'react-router'
 
 export const BackLayout = ({
   children,

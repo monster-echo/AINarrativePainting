@@ -6,28 +6,41 @@ import {
   IonIcon,
 } from '@ionic/react'
 import { stopSharp, sendSharp } from 'ionicons/icons'
-import { memo, useEffect, useRef, useState } from 'react'
+import { createContext, memo, useEffect, useRef, useState } from 'react'
 import { App } from '../../services/Apps'
 import Chat from '../../components/chat'
 import usePaintAppsStore, { PaintAppState } from '../../stores/paintStore'
+import { ChatContextProvider } from '../../hooks/chat-context'
 
 type ChatPanelProps = {
   appId: number
   app: PaintAppState
 }
-
 const ChatPanel = (props: ChatPanelProps) => {
   const { appId, app } = props
   const chatItemsDomRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLIonContentElement>(null)
   const [inputText, setInputText] = useState<string>()
   const { responding, chatItems } = app
-
   const { send, stop } = usePaintAppsStore()
 
   useEffect(() => {
+    const scrollToBottom = async () => {
+      const content = contentRef.current!
+      const scrollElement = await content.getScrollElement()
+      const scrollHeight = scrollElement.scrollHeight
+      const scrollTop = scrollElement.scrollTop
+      const clientHeight = scrollElement.clientHeight
+
+      // If user is near bottom (within 100px), auto scroll
+      // if (scrollHeight - scrollTop - clientHeight < 500) {
+      content.scrollToBottom()
+      // }
+    }
     // scroll to bottom
-    if (contentRef.current) contentRef.current.scrollToBottom()
+    if (contentRef.current) {
+      scrollToBottom()
+    }
   }, [chatItems])
   const handleSend = async () => {
     if (responding) {
@@ -60,7 +73,12 @@ const ChatPanel = (props: ChatPanelProps) => {
     <>
       <IonContent fullscreen ref={contentRef}>
         <div className="mb-16" ref={chatItemsDomRef}>
-          <Chat items={chatItems} />
+          <ChatContextProvider
+            appId={appId}
+            conversationId={app.conversationId}
+          >
+            <Chat items={chatItems} />
+          </ChatContextProvider>
         </div>
       </IonContent>
       <IonFooter className="pb-4 px-4 bg-gray-50">

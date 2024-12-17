@@ -62,6 +62,30 @@ export const updateFeedback = async (
   return post(url, { body })
 }
 
+export const updateShare = async (
+  appId: number,
+  messageId: string,
+  share: boolean,
+  filenames: string[] = [],
+  prompt = ''
+) => {
+  return (await post(`apps/${appId}/messages/${messageId}/share`, {
+    body: { share, filenames, prompt },
+  })) as any
+}
+
+export const updateHeart = async (
+  appId: number,
+  messageId: string,
+  heart: boolean,
+  filenames: string[] = [],
+  prompt = ''
+) => {
+  return (await post(`apps/${appId}/messages/${messageId}/heart`, {
+    body: { heart, filenames, prompt },
+  })) as any
+}
+
 export const sendMessage = async (
   appId = 0,
   body: Record<string, any>,

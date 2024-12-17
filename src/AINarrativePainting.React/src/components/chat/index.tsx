@@ -50,9 +50,9 @@ const Chat = (props: ChatProps) => {
       }}
     >
       <div className="flex flex-col w-full gap-4 p-4">
-        {items.map(item => {
+        {items.map((item, index) => {
           if (item.isAnswer) {
-            return <Answer key={item.id} item={item}></Answer>
+            return <Answer key={index} item={item}></Answer>
           }
           return <Question key={item.id} item={item}></Question>
         })}

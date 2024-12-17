@@ -1,9 +1,6 @@
 import { type NextRequest } from "next/server"
 import { ChatClient } from "dify-client"
-import { v4 } from "uuid"
 import { API_URL } from "@/config"
-import { randomInt } from "crypto"
-
 
 export const getInfo = (request: NextRequest, appId: number) => {
   // const sessionId = request.cookies.get("session_id")?.value || v4()
@@ -24,10 +21,7 @@ export const setSession = (sessionId: string) => {
 export const getChatClient = (appId: number) => {
   switch (appId) {
     case 1:
-    case 2:
-      return new ChatClient("app-fbFo2uaGnxYLdM8fdT7f4UQQ", API_URL)
-    case 3:
-      return new ChatClient("app-1tifCHTbKxr8ZJAPiRwOedZ3", API_URL)
+      return new ChatClient("app-RULaryb4d14q5ARY0VORv0iv", API_URL)
     default:
       throw new Error("Invalid appId")
   }

@@ -23,14 +23,19 @@ export async function POST(
 
   const client = getChatClient(appId)
 
-  const response = await client.createChatMessage(
-    inputs,
-    query,
-    user,
-    responseMode,
-    conversationId,
-    files
-  )
-
-  return new Response(response.data as any)
+  try {
+    const response = await client.createChatMessage(
+      inputs,
+      query,
+      user,
+      responseMode,
+      conversationId,
+      files
+    )
+    return new Response(response.data as any)
+  } catch (error) {
+    console.error("error", error)
+    throw error
+  }
+ 
 }

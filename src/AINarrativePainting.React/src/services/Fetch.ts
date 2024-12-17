@@ -22,6 +22,7 @@ import {
   IOnDataMoreInfo,
   IOnError,
 } from '../types/type'
+import supabase from './auth/supabase-auth'
 
 const TIME_OUT = 100000
 
@@ -363,12 +364,20 @@ export const ssePost = (
     })
 }
 
-export const request = (
+export const request = async (
   url: string,
   options = {},
   otherOptions?: IOtherOptions
 ) => {
-  return baseFetch(url, options, otherOptions || {})
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  const access_token = session?.access_token
+  const headers = new Headers({
+    Authorization: `Bearer ${access_token}`,
+  })
+  options = Object.assign({}, options, { headers })
+  return await baseFetch(url, options, otherOptions || {})
 }
 
 export const get = (

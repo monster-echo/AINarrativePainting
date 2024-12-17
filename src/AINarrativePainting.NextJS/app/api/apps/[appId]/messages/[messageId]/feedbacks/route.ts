@@ -6,12 +6,13 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ messageId: string; appId: string }> }
 ) {
+  const appId = parseInt((await params).appId)
   const body = await request.json()
   const { rating } = body
   const { messageId } = await params
-  const { user } = getInfo(request)
+  const { sessionId, user } = getInfo(request, appId)
 
-  const client = getChatClient(parseInt((await params).appId))
+  const client = getChatClient(appId)
   const { data } = await client.messageFeedback(messageId, rating, user)
   return NextResponse.json({ data })
 }

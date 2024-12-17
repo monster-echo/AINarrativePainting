@@ -39,6 +39,12 @@ import PaintPage from './pages/Paint'
 import ProtectedRoute from './components/routes/ProtectedRoute'
 import Login from './pages/Login'
 import Test from './pages/Test'
+import usePaintAppsStore from './stores/paintStore'
+import { useAuthStore } from './stores/authStore'
+import supabase from './services/auth/supabase-auth'
+import { useHomeStore } from './stores/homeStore'
+import React from 'react'
+import AppLoading from './components/base/loading/AppLoading'
 
 setupIonicReact()
 
@@ -72,21 +78,46 @@ const App: React.FC = () => {
       )
     }
   }, [handleHybridMessage])
+  const { initApps } = useHomeStore()
+  const { init } = usePaintAppsStore()
+
+  const { setSession } = useAuthStore()
+
+  const [loading, setLoading] = React.useState(true)
+
+  useEffect(() => {
+    const load = async () => {
+      const apps = await initApps()
+      await init(apps.map(app => app.id))
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession()
+      if (!error && session) {
+        setSession(session)
+      }
+    }
+
+    load().then(() => setLoading(false))
+  }, [initApps, init])
 
   return (
     <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          {/* <ProtectedRoute path="/home" component={Home} exact /> */}
-          <Route path="/home" component={Home} exact />
-          <Route path="/test" component={Test} exact />
-          <Route path="/login" component={Login} />
-          <Route path="/404" component={NotFound} exact />
-          <Route exact path="/" render={() => <Redirect to="/home" />} />
-          <ProtectedRoute path="/paint/:appid" component={PaintPage} />
-          {/* <Route render={() => <Redirect to="/404" />} /> */}
-        </IonRouterOutlet>
-      </IonReactRouter>
+      {loading && <AppLoading></AppLoading>}
+      {!loading && (
+        <IonReactRouter>
+          <IonRouterOutlet>
+            {/* <ProtectedRoute path="/home" component={Home} exact /> */}
+            <Route path="/home" component={Home} exact />
+            <Route path="/test" component={Test} exact />
+            <Route path="/login" component={Login} />
+            <Route path="/404" component={NotFound} exact />
+            <Route exact path="/" render={() => <Redirect to="/home" />} />
+            <ProtectedRoute path="/paint/:appid" component={PaintPage} />
+            {/* <Route render={() => <Redirect to="/404" />} /> */}
+          </IonRouterOutlet>
+        </IonReactRouter>
+      )}
     </IonApp>
   )
 }

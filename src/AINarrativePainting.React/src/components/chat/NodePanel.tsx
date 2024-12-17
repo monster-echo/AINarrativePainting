@@ -44,15 +44,16 @@ const NodePanel = ({ node }: { node: NodeTracing }) => {
   const getTokenCount = (tokens: number) => {
     if (tokens < 1000) return tokens
     if (tokens >= 1000 && tokens < 1000000)
-      return `${parseFloat((tokens / 1000).toFixed(3))}K`
+      return `${parseFloat((tokens / 1000).toFixed(2))}K`
     if (tokens >= 1000000)
-      return `${parseFloat((tokens / 1000000).toFixed(3))}M`
+      return `${parseFloat((tokens / 1000000).toFixed(2))}M`
   }
+
   const getTime = (time: number) => {
-    if (time < 1) return `${(time * 1000).toFixed(3)} ms`
+    if (time < 1) return `${(time * 1000).toFixed(2)} ms`
     if (time > 60)
-      return `${parseInt(Math.round(time / 60).toString())} m ${(time % 60).toFixed(3)} s`
-    return `${time.toFixed(3)} s`
+      return `${parseInt(Math.round(time / 60).toString())} m ${(time % 60).toFixed(2)} s`
+    return `${time.toFixed(2)} s`
   }
 
   return (
@@ -66,12 +67,11 @@ const NodePanel = ({ node }: { node: NodeTracing }) => {
           {running && (
             <IonLabel color="success" className="!flex items-center gap-2">
               <div>Running</div>
-              <div> {getTime(node.elapsed_time || 0)}</div>
               <IonSpinner name="dots"></IonSpinner>
             </IonLabel>
           )}
           {succeeded && (
-            <IonLabel className="!flex items-center gap-2">
+            <IonLabel className="!flex items-center gap-2 whitespace-nowrap">
               {node.node_type === 'llm' && (
                 <div>
                   {`${getTokenCount(node.execution_metadata?.total_tokens || 0)} tokens`}

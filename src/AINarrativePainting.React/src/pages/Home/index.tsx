@@ -5,6 +5,7 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
+  IonContent,
   useIonToast,
 } from '@ionic/react'
 import { SideMenuLayout } from '../../components/layouts/SideMenuLayout'
@@ -13,31 +14,17 @@ import { AppTitle } from '../../utils/consts'
 import { API_ASSETS_PREFIX } from '../../config'
 import { useHomeStore } from '../../stores/homeStore'
 import { useEffect } from 'react'
-import usePaintAppsStore from '../../stores/paintStore'
-import supabase from '../../services/auth/supabase-auth'
-import { useAuthStore } from '../../stores/authStore'
+import { PhotoProvider, PhotoView } from 'react-photo-view'
 
 export const Home = () => {
-  const { apps, initApps } = useHomeStore()
-
-  const { init } = usePaintAppsStore()
-
-  const { session, setSession } = useAuthStore()
+  const { apps, images, loadImages } = useHomeStore()
 
   useEffect(() => {
-    const load = async () => {
-      const apps = await initApps()
-      await init(apps.map(app => app.id))
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession()
-      if (!error && session) {
-        setSession(session)
-      }
-    }
-    load()
-  }, [initApps, init])
+    loadImages()
+  }, [])
+
+  const imageGroup1 = images.filter((_, index) => index % 2 === 0)
+  const imageGroup2 = images.filter((_, index) => index % 2 === 1)
 
   return (
     <SideMenuLayout title={AppTitle}>
@@ -63,6 +50,44 @@ export const Home = () => {
           </div>
         </IonCardContent>
       </IonCard>
+      <div className="px-4 pb-32">
+        <PhotoProvider>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-4 overflow-hidden">
+              {imageGroup1.map((image, index) => (
+                <div key={index} className="flex flex-col gap-4 relative">
+                  <PhotoView src={image.filenames[0]}>
+                    <img
+                      src={`${image.filenames}`}
+                      alt={image.prompt}
+                      className="rounded-md"
+                    />
+                  </PhotoView>
+                  <div className="absolute text-sm text-gray-600 overflow-hidden bottom-0 bg-gray-100 w-full p-2 opacity-75 rounded-b-sm-md whitespace-nowrap text-ellipsis">
+                    {image.prompt}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-col gap-4 overflow-hidden">
+              {imageGroup2.map((image, index) => (
+                <div key={index} className="flex flex-col gap-4 relative">
+                  <PhotoView src={image.filenames[0]}>
+                    <img
+                      src={`${image.filenames[0]}`}
+                      alt={image.prompt}
+                      className="rounded-md"
+                    />
+                  </PhotoView>
+                  <div className="absolute text-sm text-right text-gray-600 overflow-hidden bottom-0 bg-gray-100 w-full p-2 opacity-75 rounded-b-sm-md whitespace-nowrap text-ellipsis">
+                    {image.prompt}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </PhotoProvider>
+      </div>
     </SideMenuLayout>
   )
 }

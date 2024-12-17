@@ -1,7 +1,12 @@
 import { create } from 'zustand'
 import { produce } from 'immer'
 import { Annotation, ChatItem, WorkflowRunningStatus } from '../types/type'
-import { getMessages, sendMessage } from '../services/Conversations'
+import {
+  getMessages,
+  sendMessage,
+  updateHeart,
+  updateShare,
+} from '../services/Conversations'
 import { addFileInfos, sortAgentSorts } from '../utils/tools'
 
 export interface PaintAppState {
@@ -20,6 +25,21 @@ export interface PaintAppsState {
   apps: Record<number, PaintAppState>
   init: (apps: number[]) => Promise<void>
   updateConversationId: (appId: number, conversationId: string) => void
+
+  updateShare: (
+    appId: number,
+    conversationId: string,
+    messageId: string,
+    share: boolean
+  ) => Promise<void>
+
+  updateHeart: (
+    appId: number,
+    conversationId: string,
+    messageId: string,
+    heart: boolean
+  ) => Promise<void>
+
   getApp: (appId: number) => PaintAppState | undefined
   stop: (appId: number) => Promise<void>
   send: (appId: number, message: string) => Promise<void>
@@ -79,6 +99,8 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
                 item.message_files?.filter(
                   (file: any) => file.belongs_to === 'assistant'
                 ) || [],
+              share: item.share,
+              heart: item.heart,
             },
           ]
         })
@@ -111,6 +133,58 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
     )
     localStorage.setItem('paint:apps', json)
   },
+
+  updateShare: async (appId, conversationId, messageId, share) => {
+    const answerfiles = get()
+      .apps[appId].chatItems.find(item => item.id === messageId)
+      ?.message_files?.filter(file => file.type === 'image')
+      .map(file => (file as any).filename)
+
+    const content = get().apps[appId].chatItems.find(
+      item => item.id === `question-${messageId}`
+    )?.content
+    await updateShare(appId, messageId, share, answerfiles, content)
+    set(
+      produce<PaintAppsState>(state => {
+        state.apps[appId].chatItems = state.apps[appId].chatItems.map(item => {
+          if (item.id === messageId) {
+            return {
+              ...item,
+              share,
+            }
+          }
+          return item
+        })
+      })
+    )
+  },
+
+  updateHeart: async (appId, conversationId, messageId, heart) => {
+    const answerfiles = get()
+      .apps[appId].chatItems.find(item => item.id === messageId)
+      ?.message_files?.filter(file => file.type === 'image')
+      .map(file => (file as any).filename)
+
+    const content = get().apps[appId].chatItems.find(
+      item => item.id === `question-${messageId}`
+    )?.content
+
+    await updateHeart(appId, messageId, heart, answerfiles, content)
+    set(
+      produce<PaintAppsState>(state => {
+        state.apps[appId].chatItems = state.apps[appId].chatItems.map(item => {
+          if (item.id === messageId) {
+            return {
+              ...item,
+              heart,
+            }
+          }
+          return item
+        })
+      })
+    )
+  },
+
   getApp: appId => {
     return get().apps[appId]
   },
@@ -162,10 +236,13 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
             responseItem,
           ]
 
+          console.log('response id:', responseItem.id)
           console.log('chat items length:', state.apps[appId].chatItems.length)
         })
       )
     }
+
+    console.log('send message !!!!!')
 
     await sendMessage(
       appId,
@@ -192,9 +269,20 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
             console.log('message:', message)
           }
           if (messageId) {
+            const lastTempId = responseItem.id
+
             responseItem = produce(responseItem, draft => {
               draft.id = messageId
             })
+
+            // remove the answer with temp id
+            set(
+              produce<PaintAppsState>(state => {
+                state.apps[appId].chatItems = state.apps[
+                  appId
+                ].chatItems.filter(item => item.id !== lastTempId)
+              })
+            )
           }
           if (isFirstMessage && newConversationId) {
             set(
@@ -329,7 +417,10 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
         onNodeStarted: ({ data }) => {
           console.log('onNodeStarted:', data)
           responseItem = produce(responseItem, draft => {
-            draft.workflowProcess!.tracing!.push(data as any)
+            draft.workflowProcess!.tracing!.push({
+              ...data,
+              status: WorkflowRunningStatus.Running,
+            } as any)
           })
           updateLastItem()
         },
