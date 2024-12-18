@@ -29,7 +29,7 @@ const WorkflowProcess = ({
     data.status === WorkflowRunningStatus.Stopped
 
   return (
-    <IonAccordionGroup className="mb-4">
+    <IonAccordionGroup>
       <IonAccordion value="first">
         <IonItem slot="header" color="light" className="flex items-center">
           <IonLabel>Workflow process </IonLabel>

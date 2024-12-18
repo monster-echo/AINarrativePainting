@@ -155,7 +155,7 @@ const Answer = ({
           <Markdown content={content} onImageClick={handleImageClick} />
         )}
         {(!workflowProcess || workflowProcess.status === 'succeeded') && (
-          <IonCardContent className="">
+          <IonCardContent>
             <div className="flex justify-end w-full whitespace-nowrap overflow-x-auto hide-scrollbar">
               <LoadingButton
                 size="small"

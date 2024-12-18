@@ -25,6 +25,8 @@ export const Home = () => {
 
   const imageGroup1 = images.filter((_, index) => index % 2 === 0)
   const imageGroup2 = images.filter((_, index) => index % 2 === 1)
+  console.log('imageGroup1', imageGroup1)
+  console.log('imageGroup2', imageGroup2)
 
   return (
     <SideMenuLayout title={AppTitle}>
@@ -56,14 +58,16 @@ export const Home = () => {
             <div className="flex flex-col gap-4 overflow-hidden">
               {imageGroup1.map((image, index) => (
                 <div key={index} className="flex flex-col gap-4 relative">
-                  <PhotoView src={image.filenames[0]}>
+                  <PhotoView
+                    src={image.filenames.length > 0 ? image.filenames[0] : ''}
+                  >
                     <img
                       src={`${image.filenames}`}
                       alt={image.prompt}
                       className="rounded-md"
                     />
                   </PhotoView>
-                  <div className="absolute text-sm text-gray-600 overflow-hidden bottom-0 bg-gray-100 w-full p-2 opacity-75 rounded-b-sm-md whitespace-nowrap text-ellipsis">
+                  <div className="absolute text-sm text-gray-200 overflow-hidden bottom-0 bg-gray-100/30 w-full p-2 rounded-b-sm-md whitespace-nowrap text-ellipsis">
                     {image.prompt}
                   </div>
                 </div>
@@ -72,14 +76,16 @@ export const Home = () => {
             <div className="flex flex-col gap-4 overflow-hidden">
               {imageGroup2.map((image, index) => (
                 <div key={index} className="flex flex-col gap-4 relative">
-                  <PhotoView src={image.filenames[0]}>
+                  <PhotoView
+                    src={image.filenames.length > 0 ? image.filenames[0] : ''}
+                  >
                     <img
                       src={`${image.filenames[0]}`}
                       alt={image.prompt}
                       className="rounded-md"
                     />
                   </PhotoView>
-                  <div className="absolute text-sm text-right text-gray-600 overflow-hidden bottom-0 bg-gray-100 w-full p-2 opacity-75 rounded-b-sm-md whitespace-nowrap text-ellipsis">
+                  <div className="absolute text-sm text-right text-gray-200 overflow-hidden bottom-0 bg-gray-100/30 w-full p-2  rounded-b-sm-md whitespace-nowrap text-ellipsis">
                     {image.prompt}
                   </div>
                 </div>
