@@ -169,16 +169,17 @@ jobs:
         run: |
           dotnet workload install maui
           dotnet workload install android
+          ls -lha src/AINarrativePainting.App
 
       - name: Build MAUI Android
         run: |
           dotnet publish src/AINarrativePainting.App/AINarrativePainting.App.csproj \
           -f net9.0-android -c Release \
-          /p:AndroidKeyStore=true \
-          /p:AndroidSigningKeyStore=keystore.jks \
-          /p:AndroidSigningKeyAlias="${{ secrets.KEY_ALIAS }}" \
-          /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" \
-          /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" \ 
+          # /p:AndroidKeyStore=true \
+          # /p:AndroidSigningKeyStore=keystore.jks \
+          # /p:AndroidSigningKeyAlias="${{ secrets.KEY_ALIAS }}" \
+          # /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" \
+          # /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" \ 
           /p:ApplicationVersion=$APP_VERSION \
           /p:ApplicationDisplayVersion=$APP_DISPLAY_VERSION
         env:
