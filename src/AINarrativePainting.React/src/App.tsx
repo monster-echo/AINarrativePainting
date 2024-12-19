@@ -114,7 +114,7 @@ const App: React.FC = () => {
             <Route path="/404" component={NotFound} exact />
             <Route exact path="/" render={() => <Redirect to="/home" />} />
             <Route path="/paint/:appid" component={PaintPage} />
-            {/* <Route render={() => <Redirect to="/404" />} /> */}
+            <Route render={() => <Redirect to="/404" />} />
           </IonRouterOutlet>
         </IonReactRouter>
       )}

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "dev:prod": "vite --mode production --host 0.0.0.0",
     "build": "tsc && vite build --mode production",
     "move": "node scripts/build.js",
     "build2app": "pnpm build && pnpm move",

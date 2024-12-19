@@ -20,7 +20,7 @@ export const Home = () => {
   const { apps, images, loadImages } = useHomeStore()
 
   useEffect(() => {
-    loadImages()
+    // loadImages()
   }, [])
 
   const imageGroup1 = images.filter((_, index) => index % 2 === 0)
