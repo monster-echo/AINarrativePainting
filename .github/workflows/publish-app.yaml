@@ -19,8 +19,18 @@ jobs:
       - name: Get version
         id: get_version
         run: |
-          # Strip v prefix: v-phone-1.0.1 -> 1.0.1
-          VERSION=${GITHUB_REF#refs/tags/v-phone-}
+          # Strip v prefix: v-phone-1.0.1 -> 1.0.1, v-ios-1.0.1 -> 1.0.1, v-android-1.0.1 -> 1.0.1
+          if [[ "${GITHUB_REF}" == refs/tags/v-phone-* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v-phone-}
+          elif [[ "${GITHUB_REF}" == refs/tags/v-ios-* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v-ios-}
+          elif [[ "${GITHUB_REF}" == refs/tags/v-android-* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v-android-}
+          else
+            echo "Unsupported tag format"
+            exit 1
+          fi
+
           # Convert to build number: 1.0.1 -> 1000001
           BUILD_VERSION=$(echo $VERSION | sed -e 's/\./ /g' | xargs printf "%d%03d%03d")
           # Keep original tag: v1.0.1
