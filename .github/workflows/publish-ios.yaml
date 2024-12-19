@@ -3,7 +3,7 @@ name: Publish MAUI iOS App
 on:
   push:
     tags:
-      - "v*"
+      - "v-phone-*"
   workflow_dispatch:
 
 jobs:
@@ -17,8 +17,8 @@ jobs:
       - name: Get version
         id: get_version
         run: |
-          # Strip v prefix: v1.0.1 -> 1.0.1
-          VERSION=${GITHUB_REF#refs/tags/v}
+          # Strip v prefix: v-phone-1.0.1 -> 1.0.1
+          VERSION=${GITHUB_REF#refs/tags/v-phone-}
           # Convert to build number: 1.0.1 -> 1000001
           BUILD_VERSION=$(echo $VERSION | sed -e 's/\./ /g' | xargs printf "%d%03d%03d")
           # Keep original tag: v1.0.1
