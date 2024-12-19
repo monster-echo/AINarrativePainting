@@ -132,3 +132,46 @@ jobs:
         uses: actions/upload-artifact@v3.0.0
         with:
           path: "src/AINarrativePainting.App/bin/Release/net9.0-ios/ios-arm64/publish/*.ipa"
+
+  build-android:
+    needs: build-react
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Retrieve the secret and decode it to a file
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > src/AINarrativePainting.App/keystore.jks
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Install MAUI Workload
+        run: |
+          dotnet workload install maui
+          dotnet workload install android
+
+      - name: Build MAUI Android
+        run: |
+          dotnet publish src/AINarrativePainting.App/AINarrativePainting.App.csproj \
+          -f net9.0-android -c Release \
+          /p:AndroidKeyStore=true \
+          /p:AndroidSigningKeyStore=keystore.jks \
+          /p:AndroidSigningKeyAlias=${{ secrets.KEY_ALIAS }} \
+          /p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }} \
+          /p:AndroidSigningStorePass=${{ secrets.KEYSTORE_PASSWORD }} \ 
+          /p:ApplicationVersion=$APP_VERSION \
+          /p:ApplicationDisplayVersion=$APP_DISPLAY_VERSION
+        env:
+          APP_VERSION: ${{ needs.build-react.outputs.build_version }}
+          APP_DISPLAY_VERSION: ${{ needs.build-react.outputs.version }}
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.0.0
+        with:
+          path: "src/AINarrativePainting.App/bin/Release/net9.0-android/publish/*Signed.a*"
