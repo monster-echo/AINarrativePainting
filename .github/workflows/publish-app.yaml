@@ -53,7 +53,8 @@ jobs:
           cat > ./src/AINarrativePainting.React/.env.production << EOL
           VITE_SUPABASE_ENDPOINT=${{ secrets.VITE_SUPABASE_ENDPOINT }}
           VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_VERSION=${{ steps.get_version.outputs.VERSION }}
+          VITE_APP_VERSION=${{ steps.get_version.outputs.VERSION }}
+          VITE_API_ENDPOINT=${{ secrets.VITE_API_ENDPOINT }}
           EOL
 
       # build workspace ./src/AINarrativePainting.React

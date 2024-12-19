@@ -98,7 +98,7 @@ export const Home = () => {
       {/* app version  */}
       <div className="flex justify-center items-center text-gray-400/90 p-4 gap-2">
         <span>{AppTitle}</span>
-        <span className="text-sm">1.0.0</span>
+        <span className="text-sm">{import.meta.env.VITE_APP_VERSION}</span>
         <span className="text-sm">© 2024</span>
       </div>
     </SideMenuLayout>
