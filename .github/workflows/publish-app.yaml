@@ -121,7 +121,7 @@ jobs:
 
       - name: Build MAUI iOS
         run: |
-          dotnet publish  src/AINarrativePainting.App/AINarrativePainting.App.csproj \
+          dotnet publish src/AINarrativePainting.App/AINarrativePainting.App.csproj \
           -f net9.0-ios -c Release \
           /p:ApplicationVersion=$APP_VERSION \
           /p:ApplicationDisplayVersion=$APP_DISPLAY_VERSION \
@@ -176,9 +176,9 @@ jobs:
           -f net9.0-android -c Release \
           /p:AndroidKeyStore=true \
           /p:AndroidSigningKeyStore=keystore.jks \
-          /p:AndroidSigningKeyAlias=${{ secrets.KEY_ALIAS }} \
-          /p:AndroidSigningKeyPass=${{ secrets.KEYSTORE_PASSWORD }} \
-          /p:AndroidSigningStorePass=${{ secrets.KEYSTORE_PASSWORD }} \ 
+          /p:AndroidSigningKeyAlias="${{ secrets.KEY_ALIAS }}" \
+          /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" \
+          /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" \ 
           /p:ApplicationVersion=$APP_VERSION \
           /p:ApplicationDisplayVersion=$APP_DISPLAY_VERSION
         env:
