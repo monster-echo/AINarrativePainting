@@ -20,7 +20,7 @@ export const useHomeStore = create<HomeState>((set, get) => ({
 
   loadImages: async () => {
     const images = await getImages()
-    set({ images })
+    if (images) set({ images })
     return images
   },
 }))

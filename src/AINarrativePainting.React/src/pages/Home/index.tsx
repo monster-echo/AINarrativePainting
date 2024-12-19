@@ -52,7 +52,7 @@ export const Home = () => {
           </div>
         </IonCardContent>
       </IonCard>
-      <div className="px-4 pb-32">
+      <div className="px-4 pb-32 min-h-full">
         <PhotoProvider>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-4 overflow-hidden">

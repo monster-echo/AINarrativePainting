@@ -1,4 +1,4 @@
-import { Redirect, Route } from "react-router-dom"
+import { Redirect, Route } from 'react-router-dom'
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
 
@@ -113,7 +113,7 @@ const App: React.FC = () => {
             <Route path="/login" component={Login} />
             <Route path="/404" component={NotFound} exact />
             <Route exact path="/" render={() => <Redirect to="/home" />} />
-            <ProtectedRoute path="/paint/:appid" component={PaintPage} />
+            <Route path="/paint/:appid" component={PaintPage} />
             {/* <Route render={() => <Redirect to="/404" />} /> */}
           </IonRouterOutlet>
         </IonReactRouter>
