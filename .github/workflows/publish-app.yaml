@@ -144,6 +144,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.0.0
         with:
+          name: ios-build
           path: "src/AINarrativePainting.App/bin/Release/net9.0-ios/ios-arm64/publish/*.ipa"
 
   build-android:
@@ -181,4 +182,5 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.0.0
         with:
+          name: android-build
           path: "src/AINarrativePainting.App/bin/Release/net9.0-android/publish/*Signed.a*"
