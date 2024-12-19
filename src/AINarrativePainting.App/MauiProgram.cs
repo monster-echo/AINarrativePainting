@@ -62,18 +62,19 @@ namespace AINarrativePainting.App
         }
 #endif
 
-//#if IOS || MACCATALYST
-//        protected override void ConnectHandler(WKWebView platformView)
-//        {
-//            base.ConnectHandler(platformView);
-//        }
-//#endif
+        //#if IOS || MACCATALYST
+        //        protected override void ConnectHandler(WKWebView platformView)
+        //        {
+        //            base.ConnectHandler(platformView);
+        //        }
+        //#endif
 
-//#if ANDROID
-//        protected override void ConnectHandler(Android.Webkit.WebView platformView)
-//        {
-//            base.ConnectHandler(platformView);
-//        }
-//#endif
+#if ANDROID
+        protected override void ConnectHandler(Android.Webkit.WebView platformView)
+        {
+            platformView.Settings.MixedContentMode = Android.Webkit.MixedContentHandling.AlwaysAllow;
+            base.ConnectHandler(platformView);
+        }
+#endif
     }
 }
