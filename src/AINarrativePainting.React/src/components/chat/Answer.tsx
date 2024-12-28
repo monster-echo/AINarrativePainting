@@ -149,11 +149,17 @@ const Answer = ({
     <div className="flex justify-start ">
       <IonCard className="m-0 relative w-full">
         {workflowProcess && <WorkflowProcess data={workflowProcess} hideInfo />}
+
         {isAgentMode ? (
           agentModeAnswer
+        ) : content === '...' ? (
+          <IonCardContent>
+            <IonSpinner name="dots"></IonSpinner>{' '}
+          </IonCardContent>
         ) : (
           <Markdown content={content} onImageClick={handleImageClick} />
         )}
+
         {(!workflowProcess || workflowProcess.status === 'succeeded') && (
           <IonCardContent>
             <div className="flex justify-end w-full whitespace-nowrap overflow-x-auto hide-scrollbar">
