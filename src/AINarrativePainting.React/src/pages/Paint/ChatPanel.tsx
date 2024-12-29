@@ -68,7 +68,7 @@ const ChatPanel = (props: ChatPanelProps) => {
           </ChatContextProvider>
         </div>
       </IonContent>
-      <IonFooter className="pb-4 px-4 bg-gray-50">
+      <IonFooter className="pb-4 px-4">
         <IonInput
           color={'primary'}
           placeholder="请输入文本"

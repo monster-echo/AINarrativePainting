@@ -32,13 +32,13 @@ export const TileCard = (props: TileCardProps) => {
   const { title, image, avatar, link, onClick } = props
   return (
     <IonCard
-      className="rounded-md m-0 p-2 bg-slate-100"
+      className="rounded-md m-0 p-2 "
       routerLink={link}
       onClick={() => onClick && onClick()}
     >
       <IonCardContent className="m-0 p-0">
         <div className=" flex flex-col ion-activatable ripple-parent rectangle gap-2">
-          <div className="relative flex-none w-32 h-32 rounded-md bg-slate-200 flex items-center overflow-hidden ">
+          <div className="relative flex-none w-32 h-32 rounded-md  flex items-center overflow-hidden ">
             <IonRippleEffect></IonRippleEffect>
             <img
               className="rounded-md w-full h-full object-cover"

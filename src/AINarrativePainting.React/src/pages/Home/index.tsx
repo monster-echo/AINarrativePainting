@@ -67,7 +67,7 @@ export const Home = () => {
                       className="rounded-md"
                     />
                   </PhotoView>
-                  <div className="absolute text-sm text-gray-200 overflow-hidden bottom-0 bg-gray-100/30 w-full p-2 rounded-b-sm-md whitespace-nowrap text-ellipsis">
+                  <div className="absolute text-sm text-gray-200 overflow-hidden bottom-0  w-full p-2 rounded-b-sm-md whitespace-nowrap text-ellipsis">
                     {image.prompt}
                   </div>
                 </div>
@@ -85,7 +85,7 @@ export const Home = () => {
                       className="rounded-md"
                     />
                   </PhotoView>
-                  <div className="absolute text-sm text-right text-gray-200 overflow-hidden bottom-0 bg-gray-100/30 w-full p-2  rounded-b-sm-md whitespace-nowrap text-ellipsis">
+                  <div className="absolute text-sm text-right text-gray-200 overflow-hidden bottom-0  w-full p-2  rounded-b-sm-md whitespace-nowrap text-ellipsis">
                     {image.prompt}
                   </div>
                 </div>
