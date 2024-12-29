@@ -25,8 +25,6 @@ export const Home = () => {
 
   const imageGroup1 = images.filter((_, index) => index % 2 === 0)
   const imageGroup2 = images.filter((_, index) => index % 2 === 1)
-  console.log('imageGroup1', imageGroup1)
-  console.log('imageGroup2', imageGroup2)
 
   return (
     <SideMenuLayout title={AppTitle}>
