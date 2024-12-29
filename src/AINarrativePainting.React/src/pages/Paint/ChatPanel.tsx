@@ -11,6 +11,7 @@ import { App } from '../../services/Apps'
 import Chat from '../../components/chat'
 import usePaintAppsStore, { PaintAppState } from '../../stores/paintStore'
 import { ChatContextProvider } from '../../hooks/chat-context'
+import './ChatPanel.css'
 
 type ChatPanelProps = {
   appId: number
@@ -22,12 +23,24 @@ const ChatPanel = (props: ChatPanelProps) => {
   const [inputText, setInputText] = useState<string>()
   const { responding, chatItems } = app
   const { send, stop } = usePaintAppsStore()
+  // Add state at the top of component
+  const [isScrolling, setIsScrolling] = useState(false)
 
   useEffect(() => {
     if (contentRef.current) {
       contentRef.current.scrollToBottom(300)
     }
   }, [chatItems.length])
+
+  const onScroll = (e: CustomEvent) => {
+    console.log('Scroll event fired')
+  }
+  const onScrollStart = (e: CustomEvent) => {
+    setIsScrolling(true)
+  }
+  const onScrollEnd = (e: CustomEvent) => {
+    setIsScrolling(false)
+  }
 
   const handleSend = async () => {
     if (responding) {
@@ -58,8 +71,16 @@ const ChatPanel = (props: ChatPanelProps) => {
 
   return (
     <>
-      <IonContent fullscreen ref={contentRef}>
-        <div className="mb-16">
+      <IonContent
+        fullscreen
+        ref={contentRef}
+        scrollEvents={true}
+        onIonScrollStart={onScrollStart}
+        onIonScrollEnd={onScrollEnd}
+        onIonScroll={onScroll}
+        id="chat-container"
+      >
+        <div className="mb-16" id="chat-inner-container">
           <ChatContextProvider
             appId={appId}
             conversationId={app.conversationId}
@@ -68,7 +89,9 @@ const ChatPanel = (props: ChatPanelProps) => {
           </ChatContextProvider>
         </div>
       </IonContent>
-      <IonFooter className="pb-4 px-4">
+      <IonFooter
+        className={`pb-4 px-4 transition-all duration-200 ${isScrolling ? 'opacity-0 translate-y-full' : 'opacity-100'}`}
+      >
         <IonInput
           color={'primary'}
           placeholder="请输入文本"

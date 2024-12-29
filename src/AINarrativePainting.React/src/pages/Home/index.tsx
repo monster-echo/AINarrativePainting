@@ -38,7 +38,7 @@ export const Home = () => {
 
         <IonCardContent>
           <div className="flex overflow-x-auto w-full hide-scrollbar">
-            <div className="flex gap-4 ">
+            <div className="flex gap-4">
               {apps.map(app => (
                 <TileCard
                   key={app.id}

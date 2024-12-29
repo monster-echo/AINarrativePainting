@@ -41,13 +41,18 @@ export const TileCard = (props: TileCardProps) => {
           <div className="relative flex-none w-32 h-32 rounded-md  flex items-center overflow-hidden ">
             <IonRippleEffect></IonRippleEffect>
             <img
+              title="image"
               className="rounded-md w-full h-full object-cover"
               src={image}
             ></img>
           </div>
           <div className="flex gap-2 flex-row  items-center ">
             <IonAvatar className="w-6 h-6 content-center overflow-hidden">
-              <img src={avatar} className="w-full h-full object-cover" />
+              <img
+                title="avatar"
+                src={avatar}
+                className="w-full h-full object-cover"
+              />
             </IonAvatar>
             <IonText>{title}</IonText>
           </div>
