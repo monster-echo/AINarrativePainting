@@ -3,8 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AINarrativePainting.App.MainPage"
              Title="AINarrativePainting"
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             ios:Page.UseSafeArea="True"
              >
 
-    <HybridWebView x:Name="hybridWebView" />
-
+    <Grid>
+        <HybridWebView x:Name="hybridWebView" /> 
+    </Grid> 
 </ContentPage>
