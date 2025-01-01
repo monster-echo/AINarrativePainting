@@ -37,14 +37,14 @@ const Chat = (props: ChatProps) => {
             >
               <IonIcon icon={refresh}></IonIcon>
             </IonButton>
-            <IonButton
+            {/* <IonButton
               size="small"
               fill="clear"
               color={'light'}
               onClick={() => download(images[index].src)}
             >
               <IonIcon icon={downloadSharp}></IonIcon>
-            </IonButton>
+            </IonButton> */}
           </div>
         )
       }}
