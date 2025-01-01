@@ -1,5 +1,6 @@
 import { IonCard, IonCardContent } from '@ionic/react'
 import { ChatItem } from '../../types/type'
+import { memo } from 'react'
 
 const Question = ({ item }: { item: ChatItem }) => {
   return (
@@ -13,4 +14,4 @@ const Question = ({ item }: { item: ChatItem }) => {
   )
 }
 
-export default Question
+export default memo(Question)

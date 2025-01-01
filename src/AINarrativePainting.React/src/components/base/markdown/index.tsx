@@ -8,13 +8,20 @@ import SyntaxHighlighter from 'react-syntax-highlighter'
 import { atelierHeathLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { API_PREFIX } from '../../../config'
 import { PhotoView } from 'react-photo-view'
+import Image from '../image'
+import { useState } from 'react'
 
 export function Markdown(props: {
   content: string
   onImageClick?: (url: string) => void
 }) {
+  const [error, setError] = useState(false)
+
   const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement
+    if (error) {
+      return
+    }
     const src = target.src
     if (props.onImageClick) {
       props.onImageClick(src)
@@ -46,17 +53,38 @@ export function Markdown(props: {
           },
 
           img({ node, src, alt, title, ...props }) {
+            const thumbnailUrl = src + '&width=256'
             return (
-              <PhotoView src={src}>
-                <img
-                  {...props}
-                  onClick={handleImageClick}
-                  src={src}
-                  alt={alt}
-                  title={title}
-                  className="w-full rounded-t-md"
-                />
-              </PhotoView>
+              <>
+                {error && (
+                  <Image
+                    {...props}
+                    onClick={handleImageClick}
+                    src={thumbnailUrl}
+                    alt={alt}
+                    title={title}
+                    className="w-full rounded-t-md"
+                    onError={() => {
+                      setError(true)
+                    }}
+                  ></Image>
+                )}
+                {!error && (
+                  <PhotoView src={src}>
+                    <Image
+                      {...props}
+                      onClick={handleImageClick}
+                      src={thumbnailUrl}
+                      alt={alt}
+                      title={title}
+                      className="w-full rounded-t-md"
+                      onError={() => {
+                        setError(true)
+                      }}
+                    ></Image>
+                  </PhotoView>
+                )}
+              </>
             )
           },
         }}

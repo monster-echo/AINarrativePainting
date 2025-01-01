@@ -9,6 +9,7 @@ import {
 import { WorkflowRunningStatus, type WorkflowProcess } from '../../types/type'
 import { checkmarkCircleSharp, informationCircleSharp } from 'ionicons/icons'
 import NodePanel from './NodePanel'
+import { memo } from 'react'
 
 type WorkflowProcessProps = {
   data: WorkflowProcess
@@ -59,4 +60,4 @@ const WorkflowProcess = ({
   )
 }
 
-export default WorkflowProcess
+export default memo(WorkflowProcess)

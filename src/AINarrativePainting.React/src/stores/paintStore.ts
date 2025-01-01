@@ -17,6 +17,25 @@ export interface PaintAppState {
   chatItems: ChatItem[]
 }
 
+const parseAspectRatio = (aspectRatio: string) => {
+  let width = 1024
+  let height = 1024
+  if (aspectRatio === '1:1') {
+    width = 1024
+    height = 1024
+  } else if (aspectRatio === '4:3') {
+    width = 1024
+    height = 768
+  } else if (aspectRatio === '16:9') {
+    width = 1024
+    height = 576
+  } else if (aspectRatio === '9:16') {
+    width = 576
+    height = 1024
+  }
+  return [width, height]
+}
+
 const initialState = {
   apps: {},
 }
@@ -42,7 +61,11 @@ export interface PaintAppsState {
 
   getApp: (appId: number) => PaintAppState | undefined
   stop: (appId: number) => Promise<void>
-  send: (appId: number, message: string) => Promise<void>
+  send: (
+    appId: number,
+    message: string,
+    options: { aspectRatio: string }
+  ) => Promise<void>
 }
 
 const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
@@ -191,7 +214,7 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
   stop: async appId => {
     const app = get().apps[appId]
   },
-  send: async (appId, message) => {
+  send: async (appId, message, options: { aspectRatio: string }) => {
     const app = get().apps[appId]
     const conversationId = app.conversationId
     console.log('conversationId:', conversationId)
@@ -244,10 +267,15 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
 
     console.log('send message !!!!!')
 
+    const [width, height] = parseAspectRatio(options.aspectRatio)
     await sendMessage(
       appId,
       {
-        inputs: [],
+        inputs: {
+          width: width,
+          height: height,
+          batchSize: 1,
+        },
         query: message,
         conversation_id: conversationId,
       },
@@ -430,7 +458,11 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
             item => item.node_id === data.node_id
           )
           responseItem = produce(responseItem, draft => {
-            draft.workflowProcess!.tracing[currentIndex] = data as any
+            const oldData = draft.workflowProcess!.tracing[currentIndex]
+            draft.workflowProcess!.tracing[currentIndex] = {
+              ...oldData,
+              ...(data as any),
+            }
           })
           updateLastItem()
         },

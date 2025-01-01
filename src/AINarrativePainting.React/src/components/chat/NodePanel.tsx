@@ -17,15 +17,27 @@ import {
   starSharp,
   stopCircleSharp,
   triangleSharp,
+  reorderTwoSharp,
 } from 'ionicons/icons'
+import { API_ENDPOINT, API_PREFIX } from '../../config'
+import { memo } from 'react'
 
-const GetNodeTypeIcon = (nodeType: string) => {
-  switch (nodeType) {
+const GetNodeTypeIcon = (node: NodeTracing) => {
+  const { node_type } = node
+
+  switch (node_type as string) {
     case 'start':
       return <IonIcon icon={starSharp} />
     case 'end':
       return <IonIcon icon={stopCircleSharp} />
+    case 'variable-assigner':
+    case 'assigner':
+      return <IonIcon icon={reorderTwoSharp} />
     case 'tool':
+      if (node.extras?.icon)
+        return (
+          <IonImg className="w-4 h-4" src={API_ENDPOINT + node.extras.icon} />
+        )
       return <IonIcon icon={glassesSharp} />
     case 'llm':
       return <IonIcon icon={airplane} />
@@ -40,7 +52,8 @@ const NodePanel = ({ node }: { node: NodeTracing }) => {
   const failed = node.status === 'failed'
   const stopped = node.status === 'stopped'
 
-  const readonly = node.node_type !== 'llm'
+  const readonly = !['llm', 'tool'].includes(node.node_type)
+  // const readonly = false
   const getTokenCount = (tokens: number) => {
     if (tokens < 1000) return tokens
     if (tokens >= 1000 && tokens < 1000000)
@@ -60,7 +73,7 @@ const NodePanel = ({ node }: { node: NodeTracing }) => {
     <IonAccordion value={node.id} readonly={readonly}>
       <IonItem slot="header" color="light">
         <IonLabel className="!flex gap-2">
-          <div>{GetNodeTypeIcon(node.node_type)}</div>
+          <div>{GetNodeTypeIcon(node)}</div>
           <div>{node.title}</div>
         </IonLabel>
         <div>
@@ -96,10 +109,11 @@ const NodePanel = ({ node }: { node: NodeTracing }) => {
         </div>
       </IonItem>
       <div className="ion-padding" slot="content">
-        {node.node_type === 'llm' && <IonLabel>{node.outputs?.text}</IonLabel>}
+        {<IonLabel>{node.inputs?.text}</IonLabel>}
+        {<IonLabel>{node.outputs?.text}</IonLabel>}
       </div>
     </IonAccordion>
   )
 }
 
-export default NodePanel
+export default memo(NodePanel)

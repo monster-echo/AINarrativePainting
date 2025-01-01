@@ -17,7 +17,7 @@ import {
 } from 'ionicons/icons'
 import usePaintAppsStore from '../../stores/paintStore'
 import { ChatContext } from '../../hooks/chat-context'
-import { useContext, useState } from 'react'
+import { memo, useContext, useState } from 'react'
 
 const LoadingButton = (props: {
   loading: boolean
@@ -107,11 +107,13 @@ const Answer = ({
       showToast({
         message: item.share ? `已取消分享` : `已分享`,
         position: 'top',
+        duration: 2000,
       })
     } catch (error) {
       showToast({
         message: item.share ? `取消分享失败` : `分享失败`,
         position: 'top',
+        duration: 2000,
       })
     } finally {
       setShareLoading(false)
@@ -201,4 +203,4 @@ const Answer = ({
   )
 }
 
-export default Answer
+export default memo(Answer)
