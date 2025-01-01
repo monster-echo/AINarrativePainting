@@ -1,5 +1,5 @@
 import type { NextConfig } from "next"
-import { API_URL } from "./config"
+import { Dify_API_URL } from "./config"
 
 const nextConfig: NextConfig = {
   async headers() {
@@ -30,12 +30,12 @@ const nextConfig: NextConfig = {
       // rewrite /api/files/* to http://localhost:3001/files/*
       // {
       //   source: "/api/files/:path*",
-      //   destination: `${API_URL}/files/:path*`,
+      //   destination: `${Dify_API_URL}/files/:path*`,
       // },
 
       {
         source: "/console/api/:path*",
-        destination: `${API_URL}/console/api/:path*`,
+        destination: `${Dify_API_URL}/console/api/:path*`,
       },
     ]
   },

@@ -1,5 +1,5 @@
 import supabase from "@/app/api/utils/supabase"
-import { API_URL, Supabase_Bucket } from "@/config"
+import { Dify_API_URL, Supabase_Bucket } from "@/config"
 import { NextRequest, NextResponse } from "next/server"
 export async function GET(
   req: NextRequest,
@@ -12,7 +12,7 @@ export async function GET(
     const width = query.get("width")
     const height = query.get("height")
 
-    const url = `${API_URL}/files/tools/meta/${filename}?${query}`
+    const url = `${Dify_API_URL}/files/tools/meta/${filename}?${query}`
     const response = await fetch(url)
     if (!response.ok) {
       return NextResponse.error()

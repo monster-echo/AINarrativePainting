@@ -14,6 +14,9 @@ export async function GET(
   const conversationId = searchParams.get("conversation_id")
 
   const client = getChatClient(appId)
+
+  console.log("appId", appId)
+
   const { data }: any = await client.getConversationMessages(
     user,
     conversationId as string
