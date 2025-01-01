@@ -21,7 +21,7 @@ export const setSession = (sessionId: string) => {
 export const getChatClient = (appId: number) => {
   switch (appId) {
     case 1:
-      return new ChatClient("app-RULaryb4d14q5ARY0VORv0iv", API_URL)
+      return new ChatClient("app-RULaryb4d14q5ARY0VORv0iv", `${API_URL}/v1`)
     default:
       throw new Error("Invalid appId")
   }

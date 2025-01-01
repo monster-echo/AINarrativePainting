@@ -13,10 +13,11 @@ export async function POST(
     files,
     conversation_id: conversationId,
     response_mode: responseMode,
+    options,
   } = body
 
   const appId = parseInt((await params).appId)
-
+  console.log("appId", appId)
   const { user } = getInfo(request, appId)
 
   console.log("user", user)
@@ -24,6 +25,9 @@ export async function POST(
   const client = getChatClient(appId)
 
   try {
+    console.log("inputs", inputs)
+    console.log("options", options)
+
     const response = await client.createChatMessage(
       inputs,
       query,

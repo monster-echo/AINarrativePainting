@@ -28,9 +28,14 @@ const nextConfig: NextConfig = {
   rewrites: async () => {
     return [
       // rewrite /api/files/* to http://localhost:3001/files/*
+      // {
+      //   source: "/api/files/:path*",
+      //   destination: `${API_URL}/files/:path*`,
+      // },
+
       {
-        source: "/api/files/:path*",
-        destination: `${API_URL.replace("/v1", "/")}/files/:path*`,
+        source: "/console/api/:path*",
+        destination: `${API_URL}/console/api/:path*`,
       },
     ]
   },
