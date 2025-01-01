@@ -3,7 +3,7 @@ import { API_URL, Supabase_Bucket } from "@/config"
 import { NextRequest, NextResponse } from "next/server"
 export async function GET(
   req: NextRequest,
-  { params }: { params: { filename: string } }
+  { params }: { params: Promise<{ filename: string }> }
 ) {
   try {
     const filename = (await params).filename
