@@ -9,6 +9,9 @@ const DEV_SERVER_COMFYUI_URL =
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    sourcemap: true,
+  },
   plugins: [react(), legacy()],
   test: {
     globals: true,

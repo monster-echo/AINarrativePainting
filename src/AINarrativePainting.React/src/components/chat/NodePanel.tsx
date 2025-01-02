@@ -109,8 +109,8 @@ const NodePanel = ({ node }: { node: NodeTracing }) => {
         </div>
       </IonItem>
       <div className="ion-padding" slot="content">
-        {<IonLabel>{node.inputs?.text}</IonLabel>}
-        {<IonLabel>{node.outputs?.text}</IonLabel>}
+        {<IonLabel>{JSON.stringify(node.inputs)}</IonLabel>}
+        {<IonLabel>{JSON.stringify(node.outputs)}</IonLabel>}
       </div>
     </IonAccordion>
   )

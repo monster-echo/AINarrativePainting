@@ -1,3 +1,5 @@
+import { memo } from 'react'
+
 type ImageProps = {
   src?: string
   alt?: string
@@ -17,4 +19,4 @@ const Image = (props: ImageProps) => {
   return <img src={src} {...rest} onError={handleError}></img>
 }
 
-export default Image
+export default memo(Image)

@@ -43,6 +43,7 @@ const initialState = {
 export interface PaintAppsState {
   apps: Record<number, PaintAppState>
   init: (apps: number[]) => Promise<void>
+  reset: (appId: number) => void
   updateConversationId: (appId: number, conversationId: string) => void
 
   updateShare: (
@@ -140,7 +141,27 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
       console.error("Couldn't load paint apps from local storage")
     }
   },
-
+  reset: appId => {
+    set(
+      produce<PaintAppsState>(state => {
+        state.apps[appId] = {
+          conversationId: '',
+          name: '',
+          isAgentModel: false,
+          responding: false,
+          chatItems: [],
+        }
+      })
+    )
+    const apps = get().apps
+    const json = JSON.stringify(
+      Object.keys(apps).map(id => ({
+        id: parseInt(id),
+        conversationId: apps[parseInt(id)].conversationId,
+      }))
+    )
+    localStorage.setItem('paint:apps', json)
+  },
   updateConversationId: (appId, conversationId) => {
     set(
       produce<PaintAppsState>(state => {
