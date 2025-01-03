@@ -8,6 +8,7 @@ export type App = {
   avatar: string
   image: string
   category: string
+  features: string[]
 }
 
 export type PromptImage = {

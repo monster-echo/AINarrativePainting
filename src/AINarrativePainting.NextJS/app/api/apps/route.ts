@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
         avatar: "img2img/avatar.png",
         image: "img2img/background.png",
         category: "Creativity",
-        features: ["aspect_ratio"],
+        features: ["text", "aspect_ratio"],
       },
       {
         id: 2,

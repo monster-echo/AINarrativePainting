@@ -74,7 +74,7 @@ const PaintPage = () => {
     <BackLayout
       title={app.name}
       primary={
-        <IonButtons slot="primary">
+        <IonButtons slot="end">
           <IonButton id="popover-button">
             <IonIcon
               slot="icon-only"

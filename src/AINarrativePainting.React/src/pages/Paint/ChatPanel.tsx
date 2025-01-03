@@ -16,13 +16,27 @@ import {
   IonRadioGroup,
   IonRadio,
 } from '@ionic/react'
-import { stopSharp, sendSharp } from 'ionicons/icons'
-import { createContext, memo, useEffect, useRef, useState } from 'react'
+import {
+  stopSharp,
+  sendSharp,
+  cloudUploadSharp,
+  attachSharp,
+} from 'ionicons/icons'
+import {
+  createContext,
+  memo,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { App } from '../../services/Apps'
 import Chat from '../../components/chat'
 import usePaintAppsStore, { PaintAppState } from '../../stores/paintStore'
 import { ChatContextProvider } from '../../hooks/chat-context'
 import './ChatPanel.css'
+import { AppContext, AppContextProvider } from '../../hooks/app.context'
+import { uploadFile } from '../../services/Conversations'
 
 type ChatPanelProps = {
   appId: number
@@ -30,8 +44,15 @@ type ChatPanelProps = {
 }
 const ChatPanel = (props: ChatPanelProps) => {
   const { appId, app } = props
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const { app: appInfo } = useContext(AppContext)
   const contentRef = useRef<HTMLIonContentElement>(null)
   const [inputText, setInputText] = useState<string>()
+  const [file, setFile] = useState<File>()
+
+  const [fileId, setFileId] = useState<string>()
 
   const [aspectRatio, setAspectRatio] = useState<string>(
     localStorage.getItem(`aspectRatio_${appId}`) || '1:1'
@@ -60,21 +81,38 @@ const ChatPanel = (props: ChatPanelProps) => {
     // setIsScrolling(false)
   }
 
-  const handleSend = async () => {
+  const handleSend = async (text?: string) => {
     if (responding) {
       await stop(appId)
     } else {
-      if (inputText != undefined) {
-        console.log('inputText:', inputText)
-        const tempText = inputText.trim()
+      if (text != undefined) {
+        console.log('inputText:', text)
+        const tempText = text.trim()
         if (tempText.length === 0) {
           return
         }
         try {
+          const files = fileId
+            ? [
+                {
+                  type: 'image',
+                  transfer_method: 'local_file',
+                  upload_file_id: fileId,
+                },
+              ]
+            : []
+          await send(
+            appId,
+            tempText,
+            {
+              aspectRatio,
+              fileUrl: file ? URL.createObjectURL(file) : undefined,
+            },
+            files
+          )
+          setFile(undefined)
+          setFileId(undefined)
           setInputText('')
-          await send(appId, tempText, {
-            aspectRatio,
-          })
         } catch (e) {
           setInputText(tempText)
         }
@@ -85,7 +123,7 @@ const ChatPanel = (props: ChatPanelProps) => {
   const handleKeyUp = (e: any) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      handleSend()
+      handleSend(inputText)
     }
   }
 
@@ -93,6 +131,32 @@ const ChatPanel = (props: ChatPanelProps) => {
     setAspectRatio(value)
     modal.current?.dismiss()
     localStorage.setItem(`aspectRatio_${appId}`, value)
+  }
+
+  const handleUploadImage = async (file?: File) => {
+    if (!file) {
+      return
+    }
+    try {
+      setFile(file)
+      const result = await uploadFile(appId, file, e => {})
+      showToast({
+        message: '上传成功',
+        duration: 2000,
+        position: 'top',
+      })
+      const fileId = result.id
+      setFileId(fileId)
+    } catch (e) {
+      console.error(e)
+      setFile(undefined)
+      setFileId(undefined)
+      showToast('上传失败', 2000)
+    }
+  }
+
+  const handleChooseFile = (e: any) => {
+    fileInputRef.current?.click()
   }
 
   return (
@@ -121,43 +185,95 @@ const ChatPanel = (props: ChatPanelProps) => {
         }}
         className={`ion-padding pb-4 px-4 transition-all duration-200 ${isScrolling ? 'opacity-0 translate-y-full' : 'opacity-100'}`}
       >
-        <div className="flex w-full overflow-x-auto hide-scrollbar">
-          <div className="flex gap-2">
+        <div className="flex w-full overflow-x-auto hide-scrollbar items-end">
+          {appInfo && (
+            <div className="flex gap-2 items-end">
+              {appInfo.features.includes('aspect_ratio') && (
+                <IonButton
+                  size="small"
+                  color={'light'}
+                  id="open-modal"
+                  className="!m-0"
+                >
+                  {aspectRatio}
+                </IonButton>
+              )}
+
+              {appInfo.features.includes('image_upload') && (
+                <>
+                  <input
+                    type="file"
+                    placeholder="file"
+                    multiple={false}
+                    accept="image/*"
+                    hidden
+                    ref={fileInputRef}
+                    onChange={e => handleUploadImage(e.target.files?.[0])}
+                  ></input>
+                  {
+                    <IonButton
+                      size="small"
+                      color={'light'}
+                      className="!m-0"
+                      onClick={handleChooseFile}
+                    >
+                      <IonIcon icon={attachSharp} />
+                    </IonButton>
+                  }
+                  {file && (
+                    <IonImg
+                      src={URL.createObjectURL(file)}
+                      className="w-16 object-center"
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
+          {!appInfo?.features.includes('text') && (
             <IonButton
-              size="small"
-              color={'light'}
-              id="open-modal"
-              className="!m-0"
+              fill="clear"
+              color={'secondary'}
+              slot="end"
+              onClick={() => handleSend('empty')}
+              className="ml-auto"
             >
-              {aspectRatio}
+              {responding ? (
+                <IonIcon icon={stopSharp}></IonIcon>
+              ) : (
+                <IonIcon icon={sendSharp}></IonIcon>
+              )}
             </IonButton>
-          </div>
+          )}
         </div>
-        <IonInput
-          color={'primary'}
-          placeholder="请输入文本"
-          counter={true}
-          maxlength={50}
-          type="text"
-          value={inputText}
-          onIonInput={e => setInputText(e.detail.value!)}
-          accessKey="Enter"
-          onKeyDown={handleKeyDown}
-          onKeyUp={handleKeyUp}
-        >
-          <IonButton
-            fill="clear"
-            color={'secondary'}
-            slot="end"
-            onClick={handleSend}
+        {appInfo?.features.includes('text') && (
+          <IonInput
+            color={'primary'}
+            placeholder="请输入文本"
+            counter={true}
+            maxlength={50}
+            type="text"
+            value={inputText}
+            onIonInput={e => setInputText(e.detail.value!)}
+            accessKey="Enter"
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
           >
-            {responding ? (
-              <IonIcon icon={stopSharp}></IonIcon>
-            ) : (
-              <IonIcon icon={sendSharp}></IonIcon>
-            )}
-          </IonButton>
-        </IonInput>
+            <IonButton
+              fill="clear"
+              color={'secondary'}
+              slot="end"
+              onClick={() => handleSend(inputText)}
+            >
+              {responding ? (
+                <IonIcon icon={stopSharp}></IonIcon>
+              ) : (
+                <IonIcon icon={sendSharp}></IonIcon>
+              )}
+            </IonButton>
+          </IonInput>
+        )}
       </IonFooter>
 
       <IonModal
@@ -223,7 +339,11 @@ const ChatAppPanel = (props: { app: App }) => {
     return <div>加载中...</div>
   }
 
-  return <ChatPanel appId={id} app={app} />
+  return (
+    <AppContextProvider app={props.app}>
+      <ChatPanel appId={id} app={app} />
+    </AppContextProvider>
+  )
 }
 
 export default memo(ChatAppPanel)

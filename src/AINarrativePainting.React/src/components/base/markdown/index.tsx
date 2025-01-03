@@ -58,7 +58,6 @@ export function Markdown(props: {
               <>
                 {error && (
                   <Image
-                    {...props}
                     onClick={handleImageClick}
                     src={thumbnailUrl}
                     alt={alt}
@@ -72,7 +71,6 @@ export function Markdown(props: {
                 {!error && (
                   <PhotoView src={src}>
                     <Image
-                      {...props}
                       onClick={handleImageClick}
                       src={thumbnailUrl}
                       alt={alt}

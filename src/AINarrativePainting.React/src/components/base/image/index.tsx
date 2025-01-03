@@ -1,11 +1,11 @@
-import { memo } from 'react'
+import { memo, forwardRef } from 'react'
 
 type ImageProps = {
   src?: string
   alt?: string
 } & React.HTMLAttributes<HTMLImageElement>
 
-const Image = (props: ImageProps) => {
+const Image = forwardRef<HTMLImageElement, ImageProps>((props, ref) => {
   const { src, onError, ...rest } = props
 
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -16,7 +16,7 @@ const Image = (props: ImageProps) => {
     }
   }
 
-  return <img src={src} {...rest} onError={handleError}></img>
-}
+  return <img ref={ref} src={src} {...rest} onError={handleError}></img>
+})
 
 export default memo(Image)

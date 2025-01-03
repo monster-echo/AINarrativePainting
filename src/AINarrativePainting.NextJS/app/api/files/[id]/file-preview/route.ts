@@ -1,41 +1,32 @@
-import supabase from "@/app/api/utils/supabase"
 import { Dify_API_URL, Supabase_Bucket } from "@/config"
 import { NextRequest, NextResponse } from "next/server"
+import supabase from "@/app/api/utils/supabase"
+
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ filename: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const filename = (await params).filename
+    const id = (await params).id
     const query = new URL(req.url).searchParams
-
     const width = query.get("width")
     const height = query.get("height")
 
-    const url = `${Dify_API_URL}/files/tools/meta/${filename}?${query}`
-
-    console.log("meta url", url)
+    const url = `${Dify_API_URL}/files/${id}/meta?${query}`
     const response = await fetch(url)
     if (!response.ok) {
       return NextResponse.error()
     }
-
+    console.log("meta url", url)
     const filedata = await response.json()
-
-    const transform =
-      width || height
-        ? {
-            width: width ? parseInt(width) : undefined,
-            height: height ? parseInt(height) : undefined,
-          }
-        : undefined
 
     const data = await supabase.storage
       .from(Supabase_Bucket)
       .createSignedUrl(filedata.file_key, 600, {
-        transform,
+        transform: {
+          width: 64,
+        },
       })
-
     const error = data.error
     if (error) {
       return NextResponse.json({ error }, { status: 400 })

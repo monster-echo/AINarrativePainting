@@ -23,13 +23,11 @@ export const BackLayout = ({
   primary?: React.ReactNode
   title: string
 }) => {
-  const handleResetScreen = () => {}
-
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar className="min-h-16 justify-center flex items-center">
-          <IonButtons slot="secondary">
+          <IonButtons slot="start">
             <IonBackButton></IonBackButton>
           </IonButtons>
           <IonTitle>{title}</IonTitle>

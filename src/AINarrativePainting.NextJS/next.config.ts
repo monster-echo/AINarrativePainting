@@ -29,10 +29,9 @@ const nextConfig: NextConfig = {
     return [
       // rewrite /api/files/* to http://localhost:3001/files/*
       // {
-      //   source: "/api/files/:path*",
-      //   destination: `${Dify_API_URL}/files/:path*`,
+      //   source: "/api/files/:id/file-preview",
+      //   destination: `${Dify_API_URL}/files/:id/file-preview`,
       // },
-
       {
         source: "/console/api/:path*",
         destination: `${Dify_API_URL}/console/api/:path*`,

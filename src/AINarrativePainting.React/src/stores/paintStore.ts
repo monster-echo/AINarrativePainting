@@ -1,6 +1,12 @@
 import { create } from 'zustand'
 import { produce } from 'immer'
-import { Annotation, ChatItem, WorkflowRunningStatus } from '../types/type'
+import {
+  Annotation,
+  ChatItem,
+  TransferMethod,
+  VisionFile,
+  WorkflowRunningStatus,
+} from '../types/type'
 import {
   getMessages,
   sendMessage,
@@ -65,7 +71,13 @@ export interface PaintAppsState {
   send: (
     appId: number,
     message: string,
-    options: { aspectRatio: string }
+    options: { aspectRatio: string; fileUrl?: string },
+    files: {
+      type: string
+      transfer_method: string
+      url?: number
+      upload_file_id?: string
+    }[]
   ) => Promise<void>
 }
 
@@ -235,7 +247,18 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
   stop: async appId => {
     const app = get().apps[appId]
   },
-  send: async (appId, message, options: { aspectRatio: string }) => {
+  send: async (
+    appId,
+    message,
+    options: { aspectRatio: string; fileUrl?: string },
+    files: {
+      type: string
+      transfer_method: string
+      url?: number
+      upload_file_id?: string
+    }[]
+  ) => {
+    const { aspectRatio, fileUrl } = options
     const app = get().apps[appId]
     const conversationId = app.conversationId
     console.log('conversationId:', conversationId)
@@ -245,7 +268,16 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
       id: questionId,
       content: message,
       isAnswer: false,
-      message_files: [],
+      message_files: fileUrl
+        ? [
+            {
+              type: 'image',
+              transfer_method: TransferMethod.local_file,
+              url: fileUrl,
+              upload_file_id: fileUrl,
+            },
+          ]
+        : ([] as VisionFile[]),
     }
     const placeholderAnswerId = `answer-${Date.now()}`
     const placeholderAnswerItem = {
@@ -288,7 +320,7 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
 
     console.log('send message !!!!!')
 
-    const [width, height] = parseAspectRatio(options.aspectRatio)
+    const [width, height] = parseAspectRatio(aspectRatio)
     await sendMessage(
       appId,
       {
@@ -299,6 +331,7 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
         },
         query: message,
         conversation_id: conversationId,
+        files: files,
       },
       {
         getAbortController: abortController => {},
@@ -341,6 +374,7 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
             )
             get().updateConversationId(appId, newConversationId)
           }
+
           updateLastItem()
         },
         onCompleted: (hasError?: boolean) => {
@@ -415,7 +449,6 @@ const usePaintAppsStore = create<PaintAppsState>((set, get) => ({
         },
         onMessageReplace: messageReplace => {
           console.log('onMessageReplace:', messageReplace)
-
           set(
             produce<PaintAppsState>(state => {
               state.apps[appId].chatItems = state.apps[appId].chatItems.map(

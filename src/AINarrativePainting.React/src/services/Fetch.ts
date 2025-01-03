@@ -258,9 +258,9 @@ const baseFetch = (
   ])
 }
 
-export const upload = (fetchOptions: any): Promise<any> => {
+export const upload = (url: string, fetchOptions: any): Promise<any> => {
   const urlPrefix = API_PREFIX
-  const urlWithPrefix = `${urlPrefix}/file-upload`
+  const urlWithPrefix = `${urlPrefix}${url.startsWith('/') ? url : `/${url}`}`
   const defaultOptions = {
     method: 'POST',
     url: `${urlWithPrefix}`,
@@ -276,10 +276,10 @@ export const upload = (fetchOptions: any): Promise<any> => {
     for (const key in options.headers)
       xhr.setRequestHeader(key, options.headers[key])
 
-    xhr.withCredentials = true
+    // xhr.withCredentials = true
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
-        if (xhr.status === 200) resolve({ id: xhr.response })
+        if (xhr.status === 200) resolve(xhr.response)
         else reject(xhr)
       }
     }

@@ -32,21 +32,21 @@ export const TileCard = (props: TileCardProps) => {
   const { title, image, avatar, link, onClick } = props
   return (
     <IonCard
-      className="rounded-md m-0 p-2 "
+      className="rounded-md m-0 "
       routerLink={link}
       onClick={() => onClick && onClick()}
     >
       <IonCardContent className="m-0 p-0">
-        <div className=" flex flex-col ion-activatable ripple-parent rectangle gap-2">
-          <div className="relative flex-none w-32 h-32 rounded-md  flex items-center overflow-hidden ">
+        <div className="w-36 flex flex-col ion-activatable ripple-parent rectangle gap-2">
+          <div className="relative flex-none h-32 rounded-t-md  flex items-center overflow-hidden ">
             <IonRippleEffect></IonRippleEffect>
             <img
               title="image"
-              className="rounded-md w-full h-full object-cover"
+              className="w-full h-full object-cover"
               src={image}
             ></img>
           </div>
-          <div className="flex gap-2 flex-row  items-center ">
+          <div className="flex gap-2 flex-row  items-center p-2">
             <IonAvatar className="w-6 h-6 content-center overflow-hidden">
               <img
                 title="avatar"
@@ -54,7 +54,7 @@ export const TileCard = (props: TileCardProps) => {
                 className="w-full h-full object-cover"
               />
             </IonAvatar>
-            <IonText>{title}</IonText>
+            <IonText className=" whitespace-nowrap">{title}</IonText>
           </div>
         </div>
       </IonCardContent>

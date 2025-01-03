@@ -12,7 +12,7 @@ import {
   IOnNodeFinished,
   IOnWorkflowFinished,
 } from '../types/type'
-import { get, post, ssePost } from './Fetch'
+import { get, post, ssePost, upload } from './Fetch'
 
 export const getConversations = async (
   appId = 0,
@@ -140,4 +140,22 @@ export const sendMessage = async (
       onNodeFinished,
     }
   )
+}
+
+export const uploadFile = async (
+  appId: number,
+  file: File,
+  onProgress: (e: ProgressEvent) => void
+) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  const url = `apps/${appId}/file-upload`
+  const res = await upload(url, {
+    xhr: new XMLHttpRequest(),
+    data: formData,
+    onprogress: onProgress,
+  })
+  const result = JSON.parse(res)
+  console.log('uploadFile res', result)
+  return result
 }
