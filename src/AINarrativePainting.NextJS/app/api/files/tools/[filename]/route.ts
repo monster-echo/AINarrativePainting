@@ -32,7 +32,7 @@ export async function GET(
 
     const data = await supabase.storage
       .from(Supabase_Bucket)
-      .createSignedUrl(filedata.file_key, 600, {
+      .createSignedUrl(filedata.file_key, 3600, {
         transform,
       })
 

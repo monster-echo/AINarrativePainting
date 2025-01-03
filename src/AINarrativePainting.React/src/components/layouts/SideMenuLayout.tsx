@@ -61,7 +61,7 @@ export const SideMenuLayout = ({
 
   return (
     <IonPage>
-      <IonMenu contentId="main-content">
+      {/* <IonMenu contentId="main-content">
         <IonHeader>
           <IonToolbar className="min-h-16 flex flex-col items-center justify-center">
             <IonTitle>{AppTitle}</IonTitle>
@@ -104,7 +104,7 @@ export const SideMenuLayout = ({
             </IonButton>
           )}
         </IonFooter>
-      </IonMenu>
+      </IonMenu> */}
       <IonHeader>
         <IonToolbar className="min-h-16 justify-center flex items-center">
           <IonButtons slot="start">
