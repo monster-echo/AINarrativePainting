@@ -132,11 +132,13 @@ const Answer = ({
       showToast({
         message: item.heart ? `已取消喜欢` : `已喜欢`,
         position: 'top',
+        duration: 2000,
       })
     } catch (error) {
       showToast({
         message: item.heart ? `取消喜欢失败` : `喜欢失败`,
         position: 'top',
+        duration: 2000,
       })
     } finally {
       setHeartLoading(false)

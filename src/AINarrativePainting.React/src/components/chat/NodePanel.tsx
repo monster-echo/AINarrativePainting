@@ -21,6 +21,7 @@ import {
 } from 'ionicons/icons'
 import { API_ENDPOINT, API_PREFIX } from '../../config'
 import { memo } from 'react'
+import { Markdown } from '../base/markdown'
 
 const GetNodeTypeIcon = (node: NodeTracing) => {
   const { node_type } = node
@@ -46,13 +47,46 @@ const GetNodeTypeIcon = (node: NodeTracing) => {
   }
 }
 
+const NodeDetail = ({ node }: { node: NodeTracing }) => {
+  const nodeType = node.node_type as string
+
+  // check if in development mode
+  if (process.env.NODE_ENV === 'development') {
+    if (nodeType === 'tool') {
+      const json = node.inputs?.workflow_json
+      if (json) {
+        const content = `\`\`\`json\n${json}\n\`\`\``
+        return (
+          <>
+            <Markdown content={content}></Markdown>
+            <Markdown
+              content={`\`\`\`json\n${JSON.stringify(node.outputs.files, null, 2)}\n\`\`\``}
+            ></Markdown>
+          </>
+        )
+      }
+    }
+  }
+
+  return (
+    <div>
+      <IonLabel>{node.outputs?.text}</IonLabel>
+    </div>
+  )
+}
+
 const NodePanel = ({ node }: { node: NodeTracing }) => {
   const running = node.status === 'running'
   const succeeded = node.status === 'succeeded'
   const failed = node.status === 'failed'
   const stopped = node.status === 'stopped'
 
-  const readonly = !['llm', 'tool'].includes(node.node_type)
+  let readonly = false
+
+  if (process.env.NODE_ENV === 'development') {
+    readonly = !['llm', 'tool'].includes(node.node_type)
+  }
+
   // const readonly = false
   const getTokenCount = (tokens: number) => {
     if (tokens < 1000) return tokens
@@ -109,8 +143,7 @@ const NodePanel = ({ node }: { node: NodeTracing }) => {
         </div>
       </IonItem>
       <div className="ion-padding" slot="content">
-        {<IonLabel>{JSON.stringify(node.inputs)}</IonLabel>}
-        {<IonLabel>{JSON.stringify(node.outputs)}</IonLabel>}
+        <NodeDetail node={node}></NodeDetail>
       </div>
     </IonAccordion>
   )

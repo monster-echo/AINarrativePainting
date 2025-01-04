@@ -189,12 +189,7 @@ const ChatPanel = (props: ChatPanelProps) => {
           {appInfo && (
             <div className="flex gap-2 items-end">
               {appInfo.features.includes('aspect_ratio') && (
-                <IonButton
-                  size="small"
-                  color={'light'}
-                  id="open-modal"
-                  className="!m-0"
-                >
+                <IonButton size="small" color={'light'} id="open-modal">
                   {aspectRatio}
                 </IonButton>
               )}
@@ -203,7 +198,7 @@ const ChatPanel = (props: ChatPanelProps) => {
                 <>
                   <input
                     type="file"
-                    placeholder="file"
+                    placeholder="选择图片"
                     multiple={false}
                     accept="image/*"
                     hidden
@@ -212,12 +207,12 @@ const ChatPanel = (props: ChatPanelProps) => {
                   ></input>
                   {
                     <IonButton
-                      size="small"
                       color={'light'}
                       className="!m-0"
                       onClick={handleChooseFile}
                     >
                       <IonIcon icon={attachSharp} />
+                      选择图片
                     </IonButton>
                   }
                   {file && (
@@ -236,6 +231,7 @@ const ChatPanel = (props: ChatPanelProps) => {
               fill="clear"
               color={'secondary'}
               slot="end"
+              disabled={file && fileId ? false : true}
               onClick={() => handleSend('empty')}
               className="ml-auto"
             >

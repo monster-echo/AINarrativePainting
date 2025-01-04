@@ -1,7 +1,28 @@
 import type { AppInfo } from "@/types/app"
-export const Dify_API_URL = `${process.env.Dify_API_URL}`
-export const Supabase_Bucket = `${process.env.Supabase_Bucket}`
 
+const checkNotNull = (value: string | undefined, name: string) => {
+  if (value === undefined) {
+    throw new Error(`Environment variable ${name} is not set`)
+  }
+  return value
+}
+
+export const Dify_API_URL = checkNotNull(
+  process.env.Dify_API_URL,
+  "Dify_API_URL"
+)
+export const COS_SecretId = checkNotNull(
+  process.env.COS_SecretId,
+  "COS_SecretId"
+)
+export const COS_SecretKey = checkNotNull(
+  process.env.COS_SecretKey,
+  "COS_Secret"
+)
+export const COS_Region = checkNotNull(process.env.COS_Region, "COS_Region")
+export const COS_Bucket = checkNotNull(process.env.COS_Bucket, "COS_Bucket")
+
+export const ImgProxyUrl = checkNotNull(process.env.ImgProxyUrl, "ImgProxyUrl")
 
 
 export const APP_INFO: AppInfo = {

@@ -47,13 +47,13 @@ export const TileCard = (props: TileCardProps) => {
             ></img>
           </div>
           <div className="flex gap-2 flex-row  items-center p-2">
-            <IonAvatar className="w-6 h-6 content-center overflow-hidden">
+            {/* <IonAvatar className="w-6 h-6 content-center overflow-hidden">
               <img
                 title="avatar"
                 src={avatar}
                 className="w-full h-full object-cover"
               />
-            </IonAvatar>
+            </IonAvatar> */}
             <IonText className=" whitespace-nowrap">{title}</IonText>
           </div>
         </div>
