@@ -1,7 +1,7 @@
 import COS from "cos-nodejs-sdk-v5"
 
 import { resize } from "./improxy"
-import { COS_SecretId, COS_SecretKey } from "@/config"
+import { COS_SecretId, COS_SecretKey, COS_Region, COS_Bucket } from "@/config"
 
 const cos = new COS({
   SecretId: COS_SecretId,
@@ -11,7 +11,7 @@ class Storage {
   private constructor(private bucket: string) {}
 
   static from(bucket: string) {
-    return new Storage("aishuohua-1311477877")
+    return new Storage(COS_Bucket)
   }
 
   public exists = async (fileKey: string) => {
@@ -19,7 +19,7 @@ class Storage {
       cos.headObject(
         {
           Bucket: this.bucket,
-          Region: "ap-shanghai",
+          Region: COS_Region,
           Key: fileKey,
         },
         (err, data) => {
@@ -39,11 +39,10 @@ class Storage {
   public upload = async (fileKey: string, file: Blob) => {
     return new Promise<{ data: any; error: any }>(async (resolve, reject) => {
       const buffer = Buffer.from(await file.arrayBuffer())
-      console.log("Upload file to storage", buffer)
       cos.putObject(
         {
           Bucket: this.bucket,
-          Region: "ap-shanghai",
+          Region: COS_Region,
           Key: fileKey,
           Body: buffer,
         },
@@ -68,7 +67,7 @@ class Storage {
         cos.getObjectUrl(
           {
             Bucket: this.bucket,
-            Region: "ap-shanghai",
+            Region: COS_Region,
             Key: fileKey,
             Sign: true,
             Expires: expire,

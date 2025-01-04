@@ -25,8 +25,8 @@ export async function POST(
   const client = getChatClient(appId)
 
   try {
-    console.log("inputs", inputs)
-    console.log("options", options)
+    // console.log("inputs", inputs)
+    // console.log("options", options)
 
     const response = await client.createChatMessage(
       inputs,
