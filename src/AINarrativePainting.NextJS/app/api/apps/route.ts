@@ -14,16 +14,16 @@ export async function GET(request: NextRequest) {
         category: "Creativity",
         features: ["text", "aspect_ratio"],
       },
-      {
-        id: 2,
-        name: "Flux 图生插画",
-        description:
-          "Flux 图生插画是一个利用Flux.1和LoRA技术来创造图生插画的应用。",
-        avatar: "img2img/avatar.png",
-        image: "img2img/flux_image2image.png",
-        category: "Creativity",
-        features: ["image_upload"],
-      },
+      // {
+      //   id: 2,
+      //   name: "Flux 图生插画",
+      //   description:
+      //     "Flux 图生插画是一个利用Flux.1和LoRA技术来创造图生插画的应用。",
+      //   avatar: "img2img/avatar.png",
+      //   image: "img2img/flux_image2image.png",
+      //   category: "Creativity",
+      //   features: ["image_upload"],
+      // },
     ]
     return NextResponse.json(apps)
   } catch (error) {
