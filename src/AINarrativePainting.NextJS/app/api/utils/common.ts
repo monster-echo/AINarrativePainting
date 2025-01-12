@@ -30,6 +30,11 @@ export const getChatClient = (appId: number) => {
         "app-VIddG2jwbtNnHNYR430eyZzt",
         `${Dify_API_URL}/v1`
       )
+    case 3:
+      return new ChatClient(
+        "app-d8bLmlSrQGVFyvzSd3nljpdG",
+        `${Dify_API_URL}/v1`
+      )
     default:
       throw new Error("Invalid appId")
   }
