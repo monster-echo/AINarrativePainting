@@ -32,7 +32,7 @@ export const getChatClient = (appId: number) => {
       )
     case 3:
       return new ChatClient(
-        "app-d8bLmlSrQGVFyvzSd3nljpdG",
+        "app-8MojALdHy3CizvD6qi3fWV8z",
         `${Dify_API_URL}/v1`
       )
     default:

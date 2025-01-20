@@ -1,0 +1,28 @@
+{
+    "apps": [
+        {
+            "id": 3,
+            "name": "Flux Agent 文生图",
+            "description": "Flux Agent 文生图是一个利用 Flux.1 dev 技术来创造文生图的应用。",
+            "avatar": "img2img/avatar.png",
+            "image": "img2img/flux_image2image.png",
+            "category": "Creativity",
+            "features": [
+                "text"
+            ],
+            "apiKey": "app-8MojALdHy3CizvD6qi3fWV8z"
+        },
+        {
+            "id": 4,
+            "name": "Hello Chatbot",
+            "description": "Hello Chatbot 是一个利用 AI 技术来创造聊天机器人的应用。",
+            "avatar": "img2img/avatar.png",
+            "image": "img2img/hello_chatbot.png",
+            "category": "Chatbot",
+            "features": [
+                "text"
+            ],
+            "apiKey": "app-vYO8mgbOJ9NiC0OSQgqy5qht"
+        }
+    ]
+}

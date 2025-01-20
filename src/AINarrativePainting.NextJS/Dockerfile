@@ -22,6 +22,9 @@ RUN pnpm install --frozen-lockfile --prod
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
+# Copy appdata
+COPY --from=builder /app/appdata ./appdata
+
 # Add runtime configuration
 ENV NODE_ENV=production
 ENV PORT=3000

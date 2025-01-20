@@ -2,6 +2,11 @@ import type { NextConfig } from "next"
 import { Dify_API_URL } from "./config"
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  outputFileTracingIncludes: {
+    "app.json": ["app/api/apps/app.json"],
+  },
+
   async headers() {
     return [
       {
