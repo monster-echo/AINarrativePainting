@@ -1,11 +1,11 @@
 import { create } from 'zustand'
-import { App, PromptImage, getApps, getImages } from '../services/Apps'
+import { App, getApps } from '../services/Apps'
 
 interface HomeState {
   apps: App[]
-  images: PromptImage[]
+  // images: PromptImage[]
   initApps: () => Promise<App[]>
-  loadImages: () => Promise<PromptImage[]>
+  // loadImages: () => Promise<PromptImage[]>
 }
 
 export const useHomeStore = create<HomeState>((set, get) => ({
@@ -19,8 +19,8 @@ export const useHomeStore = create<HomeState>((set, get) => ({
   },
 
   loadImages: async () => {
-    const images = await getImages()
-    if (images) set({ images })
-    return images
+    // const images = await getImages()
+    // if (images) set({ images })
+    return []
   },
 }))

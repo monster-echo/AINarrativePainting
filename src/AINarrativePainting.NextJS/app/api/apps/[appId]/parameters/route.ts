@@ -1,19 +1,28 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getInfo, getChatClient, setSession } from "@/app/api/utils/common"
+import { getApp, getApps } from "@/app/services/AppService"
+import DifyClient, { DifyAPIError } from "@/app/services/dify"
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ appId: string }> }
 ) {
   const appId = parseInt((await params).appId)
-  const { sessionId, user } = getInfo(request, appId)
+  const app = getApp(appId)
+
+  const client = new DifyClient(app.apiKey, "user-123")
   try {
-    const client = getChatClient(appId)
-    const { data } = await client.getApplicationParameters(user)
-    return NextResponse.json(data as object, {
-      headers: setSession(sessionId),
-    })
+    return NextResponse.json(await client.parameters())
   } catch (error) {
-    return NextResponse.json([])
+    if (error instanceof DifyAPIError) {
+      const { code, message, status } = error
+      return NextResponse.json(
+        { error: message, code },
+        { status: status || 500 }
+      )
+    }
+    return NextResponse.json(
+      { error: "Failed to fetch Dify apps" },
+      { status: 500 }
+    )
   }
 }

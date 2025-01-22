@@ -31,93 +31,28 @@ import '@ionic/react/css/palettes/dark.system.css'
 
 /* Theme variables */
 import './theme/variables.css'
-import { useCallback, useEffect } from 'react'
 
-import { Home } from './pages/Home'
+import Home from './pages/Home'
 import { NotFound } from './pages/NotFound'
 import PaintPage from './pages/Paint'
-import ProtectedRoute from './components/routes/ProtectedRoute'
-import Login from './pages/Login'
-import Test from './pages/Test'
-import usePaintAppsStore from './stores/paintStore'
-import { useAuthStore } from './stores/authStore'
-import supabase from './services/auth/supabase-auth'
-import { useHomeStore } from './stores/homeStore'
 import React from 'react'
-import AppLoading from './components/base/loading/AppLoading'
+import AppPage from './pages/App'
 
 setupIonicReact()
 
-interface HybridWebViewEvent extends CustomEvent {
-  detail: {
-    message: string
-  }
-}
-
 const App: React.FC = () => {
-  // Define handler outside useEffect to maintain reference
-  const handleHybridMessage = useCallback((event: HybridWebViewEvent) => {
-    try {
-      console.log('HybridWebViewMessageReceived:', event.detail.message)
-      // Handle the message here
-    } catch (error) {
-      console.error('Error handling HybridWebView message:', error)
-    }
-  }, [])
-
-  useEffect(() => {
-    window.addEventListener(
-      'HybridWebViewMessageReceived',
-      handleHybridMessage as EventListener
-    )
-
-    return () => {
-      window.removeEventListener(
-        'HybridWebViewMessageReceived',
-        handleHybridMessage as EventListener
-      )
-    }
-  }, [handleHybridMessage])
-  const { initApps } = useHomeStore()
-  const { init } = usePaintAppsStore()
-
-  const { setSession } = useAuthStore()
-
-  const [loading, setLoading] = React.useState(true)
-
-  useEffect(() => {
-    const load = async () => {
-      const apps = await initApps()
-      await init(apps.map(app => app.id))
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession()
-      if (!error && session) {
-        setSession(session)
-      }
-    }
-
-    load().then(() => setLoading(false))
-  }, [initApps, init])
-
   return (
     <IonApp>
-      {loading && <AppLoading></AppLoading>}
-      {!loading && (
-        <IonReactRouter>
-          <IonRouterOutlet>
-            {/* <ProtectedRoute path="/home" component={Home} exact /> */}
-            <Route path="/home" component={Home} exact />
-            <Route path="/test" component={Test} exact />
-            <Route path="/login" component={Login} />
-            <Route path="/404" component={NotFound} exact />
-            <Route exact path="/" render={() => <Redirect to="/home" />} />
-            <Route path="/paint/:appid" component={PaintPage} />
-            <Route render={() => <Redirect to="/404" />} />
-          </IonRouterOutlet>
-        </IonReactRouter>
-      )}
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route path="/home" component={Home} exact />
+          <Route path="/app/:appid" component={AppPage} />
+          <Route path="/404" component={NotFound} exact />
+          <Route exact path="/" render={() => <Redirect to="/home" />} />
+          <Route path="/paint/:appid" component={PaintPage} />
+          <Route render={() => <Redirect to="/404" />} />
+        </IonRouterOutlet>
+      </IonReactRouter>
     </IonApp>
   )
 }

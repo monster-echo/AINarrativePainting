@@ -21,10 +21,10 @@ export const BackLayout = ({
 }: {
   children: React.ReactNode
   primary?: React.ReactNode
-  title: string
+  title: React.ReactNode
 }) => {
   return (
-    <IonPage>
+    <IonPage className="">
       <IonHeader>
         <IonToolbar className="min-h-16 justify-center flex items-center">
           <IonButtons slot="start">

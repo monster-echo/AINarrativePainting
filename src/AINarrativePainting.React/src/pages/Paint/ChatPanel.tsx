@@ -332,7 +332,7 @@ const ChatAppPanel = (props: { app: App }) => {
   const app = getApp(id)
 
   if (!app) {
-    return <div>加载中...</div>
+    return <div>加载中.12..</div>
   }
 
   return (

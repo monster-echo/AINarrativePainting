@@ -1,4 +1,4 @@
-import { getApps } from "@/app/services/AppService"
+import { getApps, AppNotFoundError } from "@/app/services/AppService"
 import { DifyAPIError } from "@/app/services/dify"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -10,9 +10,10 @@ export async function GET(
     const appId = parseInt((await params).appId)
     const app = getApps().find((app) => app.id === appId)
     if (!app) {
-      return NextResponse.json({ error: "App not found" }, { status: 404 })
+      throw new AppNotFoundError("App not found")
     }
-    return NextResponse.json(app)
+    const { apiKey, ...rest } = app
+    return NextResponse.json(rest)
   } catch (error) {
     if (error instanceof DifyAPIError) {
       const { code, message, status } = error

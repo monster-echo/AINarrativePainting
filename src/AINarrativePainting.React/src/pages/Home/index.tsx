@@ -1,95 +1,96 @@
 import {
-  IonButton,
   IonCard,
-  IonCardContent,
   IonCardHeader,
-  IonCardSubtitle,
   IonCardTitle,
-  IonContent,
+  IonCardSubtitle,
+  IonCardContent,
   useIonToast,
+  IonSkeletonText,
 } from '@ionic/react'
+import { PhotoProvider } from 'react-photo-view'
 import { SideMenuLayout } from '../../components/layouts/SideMenuLayout'
-import { TileCard } from '../../components/TileCard'
 import { AppTitle } from '../../utils/consts'
+import { useState, useEffect } from 'react'
+import { TileCard } from '../../components/TileCard'
 import { API_ASSETS_PREFIX } from '../../config'
-import { useHomeStore } from '../../stores/homeStore'
-import { useEffect } from 'react'
-import { PhotoProvider, PhotoView } from 'react-photo-view'
+import ApiClient, { AppDefinitionApiClient } from '../../services/api'
+import { App } from '../../services/Apps'
 
-export const Home = () => {
-  const { apps, images, loadImages } = useHomeStore()
+const Home = () => {
+  const [apps, setApps] = useState<App[]>([])
+  const [loading, setLoading] = useState(false)
+  const [message] = useIonToast()
+
+  const appsClient = new AppDefinitionApiClient()
 
   useEffect(() => {
-    // loadImages()
+    const load = async () => {
+      try {
+        setLoading(true)
+        setApps(await appsClient.getLists())
+        setApps([...apps])
+      } catch (error) {
+        message('加载程序失败', 2000)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
   }, [])
-
-  const imageGroup1 = images.filter((_, index) => index % 2 === 0)
-  const imageGroup2 = images.filter((_, index) => index % 2 === 1)
-
   return (
     <SideMenuLayout title={AppTitle}>
       <IonCard>
         <IonCardHeader>
-          <IonCardTitle>AI 画✍️</IonCardTitle>
+          <IonCardTitle>{'AI 画✍️'}</IonCardTitle>
           <IonCardSubtitle>发挥你的创造力，创作属于你的作品</IonCardSubtitle>
         </IonCardHeader>
-
-        <IonCardContent>
+        <IonCardContent className="p-0">
           <div className="flex overflow-x-auto w-full hide-scrollbar">
-            <div className="flex gap-4">
-              {apps.map(app => (
-                <TileCard
-                  key={app.id}
-                  title={app.name}
-                  avatar={`${API_ASSETS_PREFIX}/${app.avatar}`}
-                  image={`${API_ASSETS_PREFIX}/${app.image}`}
-                  link={`/paint/${app.id}`}
-                ></TileCard>
+            {loading &&
+              [1, 2, 3].map(i => (
+                <div className="flex gap-0" key={i}>
+                  <IonCard>
+                    <IonCardContent className="m-0 p-0">
+                      <IonCardContent className="m-0 p-0">
+                        <div className="w-36 flex flex-col ion-activatable ripple-parent rectangle gap-2">
+                          <div className="relative flex-none h-32 rounded-t-md  flex items-center overflow-hidden ">
+                            <IonSkeletonText
+                              animated
+                              className="w-full h-full"
+                            />
+                          </div>
+                          <div className="flex rounded-md flex-row  items-center px-2 pb-2">
+                            <IonSkeletonText
+                              animated
+                              className="m-0 h-6"
+                            ></IonSkeletonText>
+                          </div>
+                        </div>
+                      </IonCardContent>
+                    </IonCardContent>
+                  </IonCard>
+                </div>
               ))}
-            </div>
+            {!loading && (
+              <div className="flex gap-0">
+                {apps.map(app => (
+                  <TileCard
+                    key={app.id}
+                    title={app.name}
+                    avatar={`${API_ASSETS_PREFIX}/${app.avatar}`}
+                    image={`${API_ASSETS_PREFIX}/${app.image}`}
+                    link={`/app/${app.id}`}
+                  ></TileCard>
+                ))}
+              </div>
+            )}
           </div>
         </IonCardContent>
       </IonCard>
+
       <div className="px-4 pb-32 min-h-full">
         <PhotoProvider>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-4 overflow-hidden">
-              {imageGroup1.map((image, index) => (
-                <div key={index} className="flex flex-col gap-4 relative">
-                  <PhotoView
-                    src={image.filenames.length > 0 ? image.filenames[0] : ''}
-                  >
-                    <img
-                      src={`${image.filenames}`}
-                      alt={image.prompt}
-                      className="rounded-md"
-                    />
-                  </PhotoView>
-                  <div className="absolute text-sm text-gray-200 overflow-hidden bottom-0  w-full p-2 rounded-b-sm-md whitespace-nowrap text-ellipsis">
-                    {image.prompt}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-col gap-4 overflow-hidden">
-              {imageGroup2.map((image, index) => (
-                <div key={index} className="flex flex-col gap-4 relative">
-                  <PhotoView
-                    src={image.filenames.length > 0 ? image.filenames[0] : ''}
-                  >
-                    <img
-                      src={`${image.filenames[0]}`}
-                      alt={image.prompt}
-                      className="rounded-md"
-                    />
-                  </PhotoView>
-                  <div className="absolute text-sm text-right text-gray-200 overflow-hidden bottom-0  w-full p-2  rounded-b-sm-md whitespace-nowrap text-ellipsis">
-                    {image.prompt}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <div className="grid grid-cols-2 gap-4"></div>
         </PhotoProvider>
       </div>
 
@@ -102,3 +103,5 @@ export const Home = () => {
     </SideMenuLayout>
   )
 }
+
+export default Home

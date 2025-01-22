@@ -1,82 +1,28 @@
-import axios, { AxiosInstance } from "axios"
-export class DifyAPIError extends Error {
-  constructor(public status: number, public code: string, message: string) {
+import axios, { AxiosInstance } from 'axios'
+
+export class APIError extends Error {
+  constructor(
+    public status: number,
+    public code: string,
+    message: string
+  ) {
     super(message)
-    this.name = "DifyAPIError"
+    this.name = 'APIError'
   }
-}
-export interface AppMeta {
-  tool_icons: Record<string, object>
-}
-
-export interface TextInputForm {
-  label: string
-  variable: string
-  required: boolean
-  default: string
-}
-export interface ParagraphForm {
-  label: string
-  variable: string
-  required: boolean
-  default: string
-}
-export interface SelectForm {
-  label: string
-  variable: string
-  required: boolean
-  default: string
-  options: string[]
-}
-
-export interface AppParameters {
-  opening_statement: string
-  suggested_questions: {
-    enabled: boolean
-  }
-  speech_to_text: {
-    enabled: boolean
-  }
-  retriever_resource: {
-    enabled: boolean
-  }
-  annotation_reply: {
-    enabled: boolean
-  }
-  user_input_form: (TextInputForm | ParagraphForm | SelectForm)[]
-  file_upload: {
-    image: {
-      enabled: boolean
-      number_limits: number
-      transfer_methods: ("remote_url" | "local_url")[]
-    }
-  }
-  system_parameters: {
-    file_size_limit: number
-    image_file_size_limit: number
-    audio_file_size_limit: number
-    video_file_size_limit: number
-  }
-}
-
-export interface AppInfo {
-  name: string
-  description: string
-  tags: string[]
 }
 
 class EventSourceParser {
-  private buffer: string = ""
+  private buffer: string = ''
 
   parse(chunk: string): Array<{ data: string }> {
     this.buffer += chunk
     const events = []
-    const lines = this.buffer.split("\n\n")
-    this.buffer = lines.pop() || ""
+    const lines = this.buffer.split('\n\n')
+    this.buffer = lines.pop() || ''
 
     for (const line of lines) {
       const event = {
-        data: line.replace(/^data: /, "").trim(),
+        data: line.replace(/^data: /, '').trim(),
       }
       events.push(event)
     }
@@ -84,26 +30,81 @@ class EventSourceParser {
   }
 }
 
-class DifyClient {
+export interface AppDefinition {
+  id: number
+  name: string
+  description: string
+  url: string
+  avatar: string
+  image: string
+  category: string
+  features: string[]
+}
+
+export class AppDefinitionApiClient {
   private axios: AxiosInstance
-  constructor(apiKey: string, private user: string) {
+  constructor() {
     this.axios = axios.create({
-      baseURL: "https://dify.aishuohua.art/v1",
+      baseURL: `${import.meta.env.VITE_API_ENDPOINT}/api/apps`,
+      timeout: 2500,
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        Authorization: `Bearer `,
       },
     })
 
     this.axios.interceptors.response.use(
-      (response) => response,
-      (error) => {
+      response => response,
+      error => {
         if (axios.isAxiosError(error) && error.response) {
           const { status, data } = error.response
-          throw new DifyAPIError(
+          throw new APIError(
             status,
-            data.code || "unknown_error",
-            data.message || "Unknown error occurred"
+            data.code || 'unknown_error',
+            data.message || 'Unknown error occurred'
+          )
+        }
+        throw error
+      }
+    )
+  }
+
+  getLists = async () => {
+    const response = await this.axios.get('')
+    return response.data as AppDefinition[]
+  }
+
+  get = async (id: string | number) => {
+    const response = await this.axios.get(`/${id}`)
+    return response.data as AppDefinition
+  }
+}
+
+class AppApiClient {
+  private axios: AxiosInstance
+  constructor(appId: string | number) {
+    var baseUrl = appId
+      ? `${import.meta.env.VITE_API_ENDPOINT}/api/apps/${appId}`
+      : `${import.meta.env.VITE_API_ENDPOINT}/api/apps`
+
+    this.axios = axios.create({
+      baseURL: baseUrl,
+      timeout: 2500,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer `,
+      },
+    })
+
+    this.axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (axios.isAxiosError(error) && error.response) {
+          const { status, data } = error.response
+          throw new APIError(
+            status,
+            data.code || 'unknown_error',
+            data.message || 'Unknown error occurred'
           )
         }
         throw error
@@ -122,28 +123,27 @@ class DifyClient {
       inputs: Record<string, string>
       query: string
       files: {
-        type: "image"
-        transfer_method: "local_url" | "remote_url"
+        type: 'image'
+        transfer_method: 'local_url' | 'remote_url'
         url?: string
         upload_file_id?: string
       }[]
       auto_generate_name: boolean
     }
   ) => {
-    const response = await this.axios.post("/chat-messages", {
+    const response = await this.axios.post('/chat/blocking', {
       conversation_id,
       inputs,
       query,
-      response_mode: "blocking",
+      response_mode: 'blocking',
       files,
-      user: this.user,
       auto_generate_name,
     })
-    const contentType = response.headers["content-type"]
+    const contentType = response.headers['content-type']
 
     // check if response is blocking
-    if (contentType !== "application/json") {
-      throw new Error("Invalid response content type")
+    if (contentType !== 'application/json') {
+      throw new Error('Invalid response content type')
     }
     return response.data as {
       message_id: string
@@ -191,8 +191,8 @@ class DifyClient {
       inputs: Record<string, string>
       query: string
       files: {
-        type: "image"
-        transfer_method: "local_url" | "remote_url"
+        type: 'image'
+        transfer_method: 'local_url' | 'remote_url'
         url?: string
         upload_file_id?: string
       }[]
@@ -200,27 +200,26 @@ class DifyClient {
     }
   ) {
     const response = await this.axios.post(
-      "/chat-messages",
+      '/chat/streaming',
       {
         conversation_id,
         inputs,
         query,
-        response_mode: "streaming",
+        response_mode: 'streaming',
         files,
-        user: this.user,
         auto_generate_name,
       },
       {
         headers: {
-          Accept: "text/event-stream",
+          Accept: 'text/event-stream',
         },
-        responseType: "stream",
+        responseType: 'stream',
       }
     )
 
-    const contentType = response.headers["content-type"]
-    if (!contentType.startsWith("text/event-stream")) {
-      throw new Error("Invalid response content type")
+    const contentType = response.headers['content-type']
+    if (!contentType.startsWith('text/event-stream')) {
+      throw new Error('Invalid response content type')
     }
 
     // 404, Conversation does not exists
@@ -240,21 +239,21 @@ class DifyClient {
         try {
           const data = JSON.parse(event.data) as {
             event:
-              | "message"
-              | "agent_message"
-              | "tts_message"
-              | "tts_message_end"
-              | "agent_thought"
-              | "message_file"
-              | "message_end"
-              | "message_replace"
-              | "error"
-              | "ping"
+              | 'message'
+              | 'agent_message'
+              | 'tts_message'
+              | 'tts_message_end'
+              | 'agent_thought'
+              | 'message_file'
+              | 'message_end'
+              | 'message_replace'
+              | 'error'
+              | 'ping'
           }
           switch (data.event) {
-            case "message":
+            case 'message':
               yield data as {
-                event: "message"
+                event: 'message'
                 task_id: string
                 message_id: string
                 conversation_id: string
@@ -262,9 +261,9 @@ class DifyClient {
                 created_at: string
               }
               break
-            case "agent_message":
+            case 'agent_message':
               yield data as {
-                event: "agent_message"
+                event: 'agent_message'
                 task_id: string
                 message_id: string
                 conversation_id: string
@@ -272,27 +271,27 @@ class DifyClient {
                 created_at: string
               }
               break
-            case "tts_message":
+            case 'tts_message':
               yield data as {
-                event: "tts_message"
+                event: 'tts_message'
                 task_id: string
                 message_id: string
                 audio: string // base64
                 created_at: string
               }
               break
-            case "tts_message_end":
+            case 'tts_message_end':
               yield data as {
-                event: "tts_message_end"
+                event: 'tts_message_end'
                 task_id: string
                 message_id: string
                 created_at: string
               }
               break
-            case "agent_thought": //input and output of tool calls (Only supported in Agent mode)
+            case 'agent_thought': //input and output of tool calls (Only supported in Agent mode)
               yield data as {
                 id: string // agent thought id
-                event: "agent_thought"
+                event: 'agent_thought'
                 task_id: string
                 message_id: string
                 position: number
@@ -305,19 +304,19 @@ class DifyClient {
                 conversation_id: string
               }
               break
-            case "message_file":
+            case 'message_file':
               yield data as {
-                event: "message_file"
+                event: 'message_file'
                 id: string
-                type: "image"
+                type: 'image'
                 belongs_to: string
                 url?: string
                 conversation_id: string
               }
               break
-            case "message_end":
+            case 'message_end':
               yield data as {
-                event: "message_end"
+                event: 'message_end'
                 task_id: string
                 message_id: string
                 conversation_id: string
@@ -349,9 +348,9 @@ class DifyClient {
                 }
               }
               break
-            case "message_replace":
+            case 'message_replace':
               yield data as {
-                event: "message_replace"
+                event: 'message_replace'
                 task_id: string
                 message_id: string
                 conversation_id: string
@@ -359,9 +358,9 @@ class DifyClient {
                 created_at: string
               }
               break
-            case "error":
+            case 'error':
               yield data as {
-                event: "error"
+                event: 'error'
                 task_id: string
                 message_id: string
                 status: string
@@ -369,12 +368,12 @@ class DifyClient {
                 message: string
               }
               break
-            case "ping":
+            case 'ping':
               yield data // Ping event every 10 seconds to keep the connection alive.
               break
           }
         } catch (error) {
-          throw new Error("Invalid event data")
+          throw new Error('Invalid event data')
         }
       }
     }
@@ -382,10 +381,9 @@ class DifyClient {
 
   upload = async (file: File) => {
     const form = new FormData()
-    form.append("file", file)
-    form.append("user", this.user)
+    form.append('file', file)
 
-    const response = await this.axios.postForm("/files/upload", form)
+    const response = await this.axios.postForm('/files/upload', form)
     //400, no_file_uploaded, a file must be provided
     // 400, too_many_files, currently only one file is accepted
     // 400, unsupported_preview, the file does not support preview
@@ -409,11 +407,12 @@ class DifyClient {
   }
 
   stop = async (task_id: string) => {
-    const response = await this.axios.post(`/chat-messages/${task_id}/stop`, {
-      user: this.user,
-    })
+    const response = await this.axios.post(
+      `/messages/tasks/${task_id}/stop`,
+      {}
+    )
     return response.data as {
-      result: "success"
+      result: 'success'
     }
   }
 
@@ -423,7 +422,7 @@ class DifyClient {
       rating,
       content,
     }: {
-      rating: "like" | "dislike" | null //Upvote as like, downvote as dislike, revoke upvote as null
+      rating: 'like' | 'dislike' | null //Upvote as like, downvote as dislike, revoke upvote as null
       content: string
     }
   ) => {
@@ -431,28 +430,25 @@ class DifyClient {
       `/messages/${message_id}/feedbacks`,
       {
         rating,
-        user: this.user,
         content: content,
       }
     )
     return response.data as {
-      result: "success"
+      result: 'success'
     }
   }
 
   suggested = async (message_id: string) => {
     const response = await this.axios.get(`/messages/${message_id}/suggested`, {
-      params: {
-        user: this.user,
-      },
+      params: {},
     })
     return response.data as {
-      result: "success"
+      result: 'success'
       data: string[]
     }
   }
 
-  getMessages = async ({ 
+  getMessages = async ({
     conversation_id,
     first_id,
     limit = 20,
@@ -464,7 +460,6 @@ class DifyClient {
     const response = await this.axios.get(`/messages`, {
       params: {
         conversation_id,
-        user: this.user,
         first_id,
         limit,
       },
@@ -472,75 +467,30 @@ class DifyClient {
     return response.data as {
       limit: number
       has_more: boolean
-      data: {
-        id: string
-        conversation_id: string
-        inputs: object
-        query: string
-        answer: string
-        message_files: {
-          id: string
-          type: string
-          url: string
-          belongs_to: string
-        }[]
-        agent_thoughts: {
-          id: string
-          message_id: string
-          position: number
-          thought: string
-          observation: string
-          tool: string
-          tool_input: Record<string, any>
-          created_at: string
-          message_files: string[]
-        }[]
-        created_at: string
-        feedback: {
-          rating: string
-        }
-        retriever_resources: {
-          position: number
-          dataset_id: string
-          dataset_name: string
-          document_id: string
-          document_name: string
-          segment_id: string
-          score: number
-          content: string
-        }[]
-      }[]
+      data: Message[]
     }
   }
 
   getList = async ({
     last_id,
     limit = 20,
-    sort_by = "updated_at",
+    sort_by = 'updated_at',
   }: {
     last_id?: string | null
     limit?: number | null
-    sort_by?: "created_at" | "updated_at" | "-created_at" | "-updated_at" | null
+    sort_by?: 'created_at' | 'updated_at' | '-created_at' | '-updated_at' | null
   }) => {
-    const response = await this.axios.get("/conversations", {
+    const response = await this.axios.get('/conversations', {
       params: {
         last_id,
         limit,
-        user: this.user,
         sort_by,
       },
     })
     return response.data as {
       limit: number
       has_more: boolean
-      data: {
-        id: string
-        name: string
-        inputs: object
-        status: string
-        created_at: string
-        updated_at: string
-      }[]
+      data: Conversation[]
     }
   }
 
@@ -548,13 +498,11 @@ class DifyClient {
     const response = await this.axios.delete(
       `/conversations/${conversation_id}`,
       {
-        data: {
-          user: this.user,
-        },
+        data: {},
       }
     )
     return response.data as {
-      result: "success" | "error"
+      result: 'success' | 'error'
     }
   }
 
@@ -573,7 +521,6 @@ class DifyClient {
       {
         name,
         auto_generate,
-        user: this.user,
       }
     )
     return response.data as {
@@ -588,21 +535,19 @@ class DifyClient {
   }
 
   audioToText = async (audio: File) => {
-    // Audio file. Supported formats: ['mp3', 'mp4', 'mpeg', 'mpga', 'm4a', 'wav', 'webm'] File size limit: 15MB
-    // check if audio is valid
     if (
-      !["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"].includes(audio.type)
+      !['mp3', 'mp4', 'mpeg', 'mpga', 'm4a', 'wav', 'webm'].includes(audio.type)
     ) {
-      throw new Error("Invalid audio format")
+      throw new Error('Invalid audio format')
     }
     if (audio.size > 15 * 1024 * 1024) {
-      throw new Error("Audio file size exceeds limit")
+      throw new Error('Audio file size exceeds limit')
     }
 
     const form = new FormData()
-    form.append("file", audio)
-    form.append("type", audio.type)
-    const response = await this.axios.postForm("/audio-to-text", form)
+    form.append('file', audio)
+    form.append('type', audio.type)
+    const response = await this.axios.postForm('/audio-to-text', form)
     return response.data as {
       text: string
     }
@@ -617,41 +562,135 @@ class DifyClient {
   }) => {
     const form = {
       text,
-      user: this.user,
       message_id: message_id,
     }
-    const response = await this.axios.postForm("/text-to-audio", form)
-    // response content type is audio/wav
-    // todo: return a blob
+    const response = await this.axios.postForm('/text-to-audio', form)
     return response.data
   }
 
-  info: () => Promise<AppInfo> = async () => {
-    const response = await this.axios.get("/info", {
-      params: {
-        user: this.user,
-      },
+  info = async () => {
+    const response = await this.axios.get('/info', {
+      params: {},
     })
     return response.data as AppInfo
   }
 
   parameters = async () => {
-    const response = await this.axios.get("/parameters", {
-      params: {
-        user: this.user,
-      },
-    })
+    const response = await this.axios.get('/parameters', {})
     return response.data as AppParameters
   }
 
   meta = async () => {
-    const response = await this.axios.get("/meta", {
-      params: {
-        user: this.user,
-      },
-    })
+    const response = await this.axios.get('/meta')
     return response.data as AppMeta
   }
 }
+export interface Message {
+  id: string
+  conversation_id: string
+  inputs: object
+  query: string
+  answer: string
+  message_files: {
+    id: string
+    type: string
+    url: string
+    belongs_to: string
+  }[]
+  agent_thoughts: {
+    id: string
+    message_id: string
+    position: number
+    thought: string
+    observation: string
+    tool: string
+    tool_input: Record<string, any>
+    created_at: string
+    message_files: string[]
+  }[]
+  created_at: string
+  feedback: {
+    rating: string
+  }
+  retriever_resources: {
+    position: number
+    dataset_id: string
+    dataset_name: string
+    document_id: string
+    document_name: string
+    segment_id: string
+    score: number
+    content: string
+  }[]
+}
 
-export default DifyClient
+export interface Conversation {
+  id: string
+  name: string
+  inputs: object
+  status: string
+  created_at: string
+  updated_at: string
+}
+
+export interface AppInfo {
+  name: string
+  description: string
+  tags: string[]
+}
+
+export interface AppParameters {
+  opening_statement: string
+  suggested_questions: {
+    enabled: boolean
+  }
+  speech_to_text: {
+    enabled: boolean
+  }
+  retriever_resource: {
+    enabled: boolean
+  }
+  annotation_reply: {
+    enabled: boolean
+  }
+  user_input_form: (TextInputForm | ParagraphForm | SelectForm)[]
+  file_upload: {
+    image: {
+      enabled: boolean
+      number_limits: number
+      transfer_methods: ('remote_url' | 'local_url')[]
+    }
+  }
+  system_parameters: {
+    file_size_limit: number
+    image_file_size_limit: number
+    audio_file_size_limit: number
+    video_file_size_limit: number
+  }
+}
+
+export interface AppMeta {
+  tool_icons: Record<string, object>
+}
+
+interface TextInputForm {
+  label: string
+  variable: string
+  required: boolean
+  default: string
+}
+interface ParagraphForm {
+  label: string
+  variable: string
+  required: boolean
+  default: string
+}
+interface SelectForm {
+  label: string
+  variable: string
+  required: boolean
+  default: string
+  options: string[]
+}
+
+export default AppApiClient

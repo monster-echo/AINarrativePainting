@@ -15,7 +15,6 @@ import { useHomeStore } from '../../stores/homeStore'
 import { App } from '../../services/Apps'
 import ChatPanel from './ChatPanel'
 import {
-  checkmark,
   checkmarkCircleSharp,
   closeCircleSharp,
   ellipsisHorizontal,

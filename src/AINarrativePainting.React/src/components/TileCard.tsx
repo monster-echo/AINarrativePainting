@@ -1,14 +1,4 @@
-import {
-  IonGrid,
-  IonRow,
-  IonAvatar,
-  IonText,
-  IonRippleEffect,
-  IonItem,
-  IonButton,
-  IonCard,
-  IonCardContent,
-} from '@ionic/react'
+import { IonText, IonRippleEffect, IonCard, IonCardContent } from '@ionic/react'
 
 export interface TileCardProps {
   /**
@@ -32,13 +22,13 @@ export const TileCard = (props: TileCardProps) => {
   const { title, image, avatar, link, onClick } = props
   return (
     <IonCard
-      className="rounded-md m-0 "
+      className="rounded-md "
       routerLink={link}
       onClick={() => onClick && onClick()}
     >
       <IonCardContent className="m-0 p-0">
         <div className="w-36 flex flex-col ion-activatable ripple-parent rectangle gap-2">
-          <div className="relative flex-none h-32 rounded-t-md  flex items-center overflow-hidden ">
+          <div className="relative flex-none h-36 rounded-t-md  flex items-center overflow-hidden ">
             <IonRippleEffect></IonRippleEffect>
             <img
               title="image"
@@ -46,7 +36,7 @@ export const TileCard = (props: TileCardProps) => {
               src={image}
             ></img>
           </div>
-          <div className="flex gap-2 flex-row  items-center p-2">
+          <div className="flex gap-2 flex-row  items-center px-2 pb-2">
             {/* <IonAvatar className="w-6 h-6 content-center overflow-hidden">
               <img
                 title="avatar"

@@ -5,7 +5,8 @@ import { DifyAPIError } from "@/app/services/dify"
 export async function GET(request: NextRequest) {
   try {
     const apps = getApps()
-    return NextResponse.json(apps)
+    const appsWithoutApiKey = apps.map(({ apiKey, ...rest }) => rest)
+    return NextResponse.json(appsWithoutApiKey)
   } catch (error) {
     if (error instanceof DifyAPIError) {
       const { code, message, status } = error
